@@ -1,7 +1,9 @@
+
 #let conf(
   title: (),
   profs: (),
   accademic_year: (),
+  accent-color: rgb("#1d3557"),
   uni: "Università degli Studi di Verona",
   author: (
     (
@@ -14,15 +16,25 @@
 ) = {
   // Global document setup
   set document(title: title, author: author.name)
+  set page(header: context {
+    // Gets the last heading before the current page and uses it as the header text
+    let headings = query(selector(heading.where(outlined: true)).before(here()))
+
+    let header-text = if headings.len() > 0 {
+      headings.last().body
+    }
+
+    align(right, text(size: 9pt, header-text))
+  })
   set text(font: "New Computer Modern", size: 11pt, lang: "it")
   set par(justify: true, leading: 0.75em)
   set heading(numbering: "1.1")
-  show heading: set block(above: 1cm)
   show heading: smallcaps
   show title: set text(weight: "thin", size: 18pt)
+  // We love old school math
 
   // Heading styling
-  show heading.where(level: 1): it => {
+  show heading: it => {
     v(1.5em)
     it
     v(0.8em)
@@ -63,3 +75,5 @@
 
   doc
 }
+
+#let eq(eq) = math.equation(block: true, eq)
