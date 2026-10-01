@@ -167,5 +167,5 @@ Bisogna anche valutare il rischio di una minaccia e dare priorità ad essa e cap
 Le misure di protezione seguono questo workflow: 
 
 $
-"Protezione" arrow.squiggly "Rilevare" arrow.squiggly "Recuperare"
+"Protezione" arrow "Rilevare" arrow "Recuperare"
 $

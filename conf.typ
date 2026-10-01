@@ -1,3 +1,5 @@
+#import "@preview/curryst:0.6.0": rule, rule-set, prooftree
+#import "@preview/showybox:2.0.4": *
 
 #let conf(
   title: (),
@@ -34,9 +36,9 @@
 
   // Heading styling
   show heading: it => {
-    v(1.5em)
+    v(14pt)
     it
-    v(0.8em)
+    v(7pt)
   }
 
   place(
@@ -75,3 +77,38 @@
   doc
 }
 
+#let thm(title, content) = {
+  v(8pt)
+  showybox(
+  title: [
+ Theorem:  #title],
+  frame: (
+    border-color: blue,
+    title-color: blue.lighten(30%),
+    body-color: blue.lighten(95%),
+    footer-color: blue.lighten(80%)
+  ),
+  breakable: true
+)[
+ #content
+]
+  v(8pt)
+}
+
+#let def(title, content) = {  
+  v(8pt)
+  showybox(
+  title: [
+ Definition:  #title],
+  frame: (
+    border-color: green,
+    title-color: green.lighten(30%),
+    body-color: green.lighten(95%),
+    footer-color: green.lighten(80%)
+  ),
+  breakable: true
+)[
+ #content
+]
+  v(8pt)
+}
