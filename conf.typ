@@ -31,7 +31,6 @@
   set heading(numbering: "1.1")
   show heading: smallcaps
   show title: set text(weight: "thin", size: 18pt)
-  // We love old school math
 
   // Heading styling
   show heading: it => {
@@ -76,4 +75,3 @@
   doc
 }
 
-#let eq(eq) = math.equation(block: true, eq)
