@@ -1,5 +1,6 @@
 #import "@preview/curryst:0.6.0": rule, rule-set, prooftree
 #import "@preview/showybox:2.0.4": *
+#import "@preview/codly:1.3.0": *
 
 #let conf(
   title: (),
