@@ -10,7 +10,7 @@
 
 == SQL Injection 
 
-Uno degli attacchi più famosi e pericolosi è l'SQL Injection. Questo tipo di attacco sfrutta le vulnerabilità nelle applicazioni web che interagiscono con un database SQL. 
+Uno degli attacchi più famosi e pericolosi è l'SQL Injection.Questo tipo di attacco sfrutta le vulnerabilità nelle applicazioni web che interagiscono con un database SQL.
 
 + L'attaccante inserisce una query SQL malevola in un campo di input dell'applicazione, come un modulo di login o una barra di ricerca.
 + Se l'applicazione non valida correttamente l'input, la query malevola viene eseguita sul database, permettendo all'attaccante di accedere a dati sensibili, modificare o cancellare informazioni.
@@ -169,3 +169,165 @@ Le misure di protezione seguono questo workflow:
 $
 "Protezione" arrow "Rilevare" arrow "Recuperare"
 $
+
+== La triade CIA 
+
+Ci sono tre principi fondamentali della sicurezza informatica, noti come la triade CIA:
+
+- *Confidenzialità (Confidentiality)*: Garantire che le informazioni siano accessibili solo a persone autorizzate.
+- *Integrità (Integrity)*: Garantire che le informazioni siano accurate e complete, e che non siano state alterate in modo non autorizzato.
+- *Disponibilità (Availability)*: Garantire che le informazioni e i sistemi siano disponibili quando necessario.
+
+La sicurezza sta nell'intersezione di queste misure. Oltre a questi principali caratteristiche ne esistono altre come: 
+
+- *L'accountability*: non possiamo dire con certezza che la sicurezza di un specifico sistema sia impenetrabile e quindi l'accountability riesce a tracciare le azioni degli utenti e dei sistemi, permettendo di identificare eventuali violazioni della sicurezza e di attribuire la responsabilità.
+- *L'autenticità*: che ci garantisce che le informazioni sono affidabile, genuine e verificabili. Per un esempio che verifica se un utente è veramente ciò che dice di essere.
+- *Non repudiazione*: garantisce che una parte non possa negare l'autenticità di un'azione o di un messaggio inviato. Ad esempio, se un utente invia un messaggio firmato digitalmente, non può successivamente negare di averlo inviato.
+
+== Principi per il design di sistemi sicuri
+
+Ci sono dei common-sense principles per il design di sistemi sicuri, che sono i seguenti: 
+
+- I meccanismi di sicurezza dovrebbero essere _più semplici e piccoli possibili_ in modo da essere capire, testare e verificarlo. Come per esempio utilizzare un piccolo ma ben testato modulo di autenticazione piuttosto che un complesso sistema di autenticazione fatto ad hoc. 
+- Gli errori dovrebbe avere *Fail Safe Defaults* ovvero sistemi che nel momento in cui accade un errore, il sistema dovrebbe entrare in uno stato sicuro e non permettere accessi non autorizzati.
+- *Complete Mediation*, è un principio di design che dice che ogni accesso ad una risorsa protetta deve essere verificato. I permessi possono cambiare dopo il primo accesso, quindi ogni accesso deve essere controllato. 
+- La sicurezza di un meccanismo non dove dipendere sulla segretezza del suo design o della sua implementazione, ma dovrebbe essere sicuro anche se il design e l'implementazione sono pubblici. Questo principio è noto come *Open Design*.
+- Le azioni critiche devono richiedere il coinvolgimento da un altro soggetto, così che in questo modo l'attaccante dovrebbe attaccare due soggetti per compiere un'azione non desiderata. Questo si chiama *Separation of Duties*. 
+- *Least Privilege*: Gli utenti e processi dovrebbero ricevere solo i permessi di cui hanno bisogno per svolgere le loro funzioni. Questo riduce il rischio di accessi non autorizzati e limitare i danni in caso di compromissione.
+- *Defense in depth*: La difesa in profondità usa multiple e independenti misure di sicurezza così che il crollo di un layer non compromette l'intero sistema. 
+- *Isolare* è la forma più semplice di protezione. Limitare il numero di sistemi su cui vi sono informazioni critiche, isolandoli _fisicamente_ o _logicamente_.  
+- I meccanismi di sicurezza dovrebbero essere semplici da capire e usarli. Il sistema di sicurezza *non deve essere d'intralcio* alla sicurezza stessa e deve essere ragionevole e minimal.
+
+== Policy di sicurezza 
+
+La security policy ci dice: 
+
+- Cosa deve essere protetto
+- Come questa protezione è implementata
+- Se la protezione funziona
+
+
+#figure(
+  image("images/policy.png", width: 80%),
+  caption: "Policy di sicurezza informatica",
+)
+
+Una policy di sicurezza caratterizza: 
+- comportamenti accettabili del sistema
+- comportamenti inaccettabili del sistema
+- utenti e azioni autorizzate
+- condizioni in cui l'accesso è consentito
+Una buona polizza dovrebbe essere:
+- chiaramente definita
+- coerente
+- consistente
+- implementabile
+- verificabile
+
+Le scelte di sicurezza coinvolgono anche trade-offs.
+
+Per astrarre la sicurezza abbiamo bisogno di un modello di sicurezza, che è una rappresentazione formale della security policy. Un modello di sicurezza definisce le regole e le restrizioni per l'accesso alle risorse del sistema, basandosi sulla security policy. I modelli di sicurezza possono essere utilizzati per analizzare e verificare la sicurezza di un sistema, identificare vulnerabilità e progettare contromisure. Il modello rappresenta comportamenti possibili, la policy vincola questi comportamenti in modo da evitarre stati non sicuri.
+
+#figure(
+  image("images/stati_sicuri.png", width: 100%),
+  caption: "Stati sicuri e non sicuri in un modello di sicurezza",
+)
+
+Questo modello _è solo un astrazione e non è una garanzia di sicurezza_, ma ci permette di ragionare sulla sicurezza e di fare delle analisi formali. 
+
+Ci dobbiamo anche assicurare che il sistema sia sicuro in ogni momento, quindi dobbiamo fare un'analisi continua e iterativa della sicurezza. Questo processo è noto come PDCA (Plan-Do-Check-Act), che ci permette di pianificare, implementare, verificare e migliorare continuamente la sicurezza del sistema.
+
+#figure(
+  image("images/pdca.png", width: 100%),
+  caption: "Ciclo PDCA per la sicurezza informatica",
+)
+
+= Autenticazione 
+
+*L'autenticazione* è il modo in cui un sistema verifica l'identità di un utente o di un'entità e quindi serve per proteggere l'identità digitale di un utente in maniera tale da evitare che un attaccante possa impersonare un utente legittimo. L'autenticazione è un processo fondamentale per garantire la sicurezza dei sistemi informatici e proteggere le informazioni sensibili.
+
+L'autenticazione da sola non garantisce l'accountability. Le credenziali rubate possono comunque causare l'attribuzione di un utente legittimo. *MFA, logs protetti e monitoraggio delle sessioni* possono aiutare a garantire l'accountability. 
+
+
+#figure(
+  image("images/auth.png", width: 100%),
+  caption: "Modi per autenticarsi in un sistema informatico",
+)
+
+== Metodi di autenticazione
+
+Solitamente, quando si parla di Password (come metodo di autenticazione) viene fatta attraverso Single Factor Authentication o Multi Factor Authentication (MFA). La MFA è un metodo di autenticazione che richiede agli utenti di fornire due o più prove di identità, note come fattori, per accedere a un sistema o a un servizio.
+
+L'insieme di tutte le possibili password che un attacker dovrebbe provare sono: 
+
+$
+ "PS" = abs(A)^n
+$
+
+dove $n$ è la lunghezza della password e $A$ è l'insieme di tutti i caratteri possibili. Sembra un numero impossibile da poter farci brute-force ma ci sono alcune vulnerabilità come: 
+
+- Il riuso delle password 
+- Password prevedibili 
+
+Quindi quando creaimo una password dobbiamo fare attenzione a:
+
+- La lunghezza 
+- L'entropia della password (quanto è casuale)
+
+L'insieme di queste due cose rende la password più forte.
+
+_Mirai botnet_ riuscì a compromettere più di 600.000 dispositivi IoT sfruttando password deboli e prevedibili, causando un attacco DDoS su larga scala. Questo attacco ha evidenziato l'importanza di utilizzare password forti e uniche per ogni dispositivo e servizio.
+
+Ci sono diversi modi per attaccare le password: 
+
+- Online, quindi un interazione diretta del servizio, e possiamo difenderci usando rate limiting, throttling, MFA.
+  Gli attacchi possono avvenire attraverso 
+  - brute-force
+  - dictionary attack 
+  - credential stuffing
+  - password spraying
+
+- Offline, tramite l'attaccante che ruba le hashed passwords dal server. 
+  Di solito per proteggersi, si utilizza un meccanismo chiamato salt value ovvero 
+  un valore casuale aggiunto alla password prima di essere hashata, in modo da rendere più difficile per 
+  gli attaccanti utilizzare tabelle pre-computate (rainbow tables) per decifrare le password.
+
+
+#figure(
+  image("images/off-on.png", width: 100%),
+  caption: "Modi per attaccare le password: online e offline",
+)
+
+Alternative alle password sono: 
+
+- *Qualcosa che possiedi*: come i token, telefono o smart card 
+- *Una chiave crittografica*: una chiave privata in un altro dispositivo 
+- *One time proof*: come i codici generati da app di autenticazione o inviati via SMS, 
+  che sono validi solo per un breve periodo di tempo. 
+- *Autenticazione certificata*: accesso VPN, sistemi aziendali, smart cards, autenticazione 
+  dei dispositivi, esercizi sicuri e infrastrutturali. La chiave privata dimostra 
+  il possesso senza rivelaren la chiave in sè.
+- *Passkey*: è un metodo di autenticazione che utilizza una coppia di chiavi crittografiche per autenticare un utente senza la necessità di una password. 
+  La chiave pubblica viene memorizzata sul server, mentre la chiave privata rimane sul dispositivo dell'utente. 
+  Quando l'utente tenta di accedere, il server invia una sfida crittografica che può essere risolta 
+  solo con la chiave privata dell'utente, garantendo così l'autenticazione senza trasmettere la password.
+- *Biometric authorization*: come impronte digitali, riconoscimento facciale o scansione dell'iride, che utilizza caratteristiche fisiche 
+  uniche dell'utente per verificare la sua identità. Requisiti per autenticazione biometrica:
+    - tutte le persone dovrebbero avere questa caratteristica 
+    - le persone dovrebbero avere differenza in questa caratteristica
+    - la caratteristica non deve cambiare troppo durante il tempo 
+    - la caratteristica deve avere l'abilità di essere identificata
+  Le caratteristiche biometriche non sono segreti perfetti: 
+    - Spoofing: impronta digitale false, fotografie, etc. 
+    - Privacy: le informazioni biometriche sono molto personali 
+    - Irreversability: una volta compromessa, non può essere cambiata
+    - Template protection: template immagazzinati devono essere protetti 
+    - Falsi positivi: ci sono dei casi in cui l'utente legittimo non viene riconosciuto 
+      oppure un impostore viene riconosciuto.
+    - Metodi di recupero possono poi diventare una vulnerabilità 
+
+  I dati biometrici sono conveniente ma devono essere protetti.
+
+  
+
+
