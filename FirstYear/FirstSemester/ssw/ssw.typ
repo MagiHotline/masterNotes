@@ -294,7 +294,7 @@ Ci sono diversi modi per attaccare le password:
 
 
 #figure(
-  image("images/off-on.png", width: 100%),
+  image("images/off-on.png", width: 80%),
   caption: "Modi per attaccare le password: online e offline",
 )
 
@@ -329,5 +329,136 @@ Alternative alle password sono:
   I dati biometrici sono conveniente ma devono essere protetti.
 
   
+= Access Control 
+
+*L'access control* ci permette di limitare l'accesso alle risorse del sistema solo 
+agli utenti autorizzati.  
+
++ L'utente entra nel sistema con successo attraverso _autenticazione_
++ L'utente può accedere solo alle risorse per cui ha i permessi (_autorizzazione_). Il reference monitor fa da 
+  "middleman" tra l'utente e la risorsa, controllando se l'utente ha i permessi per accedere alla risorsa richiesta attraverso 
+  un database di autorizzazioni
++ Se l'utente cambia l'identificatore della risorsa, il sistema deve negare l'accesso.
+
+I concetti fondamentali dell'access control sono:
+
+- Soggetto: chi richiede l'accesso 
+- Azioni: leggere, scrivere, eseguire, eliminare, etc...
+- Oggetto: quale risorsa viene richiesta 
+- Decisione della policy: valutare la Policy (quindi la specifica delle regole che 
+  definiscono il controllo degli accessi)
+- Risultato: accesso negato o concesso
+
+$
+  "Soggetto" + "Azioni" + "Oggetto" = "Access Control"
+$
+
+Il reference monitor viene articolato in due componenti:
+
+- *Policy decision point*: prende la decisione di accesso basata sulla policy e 
+  sui permessi dell'utente.
+- *Policy enforcement point*: applica la decisione di accesso, permettendo o 
+  negando l'accesso alla risorsa richiesta.
+
+Il reference monitor deve rispettare tre caratteristiche: 
+
+- *Complete mediation*: ogni accesso deve essere controllato, anche se l'utente ha già avuto 
+  accesso in precedenza.
+- *Tamper-proof*: il reference monitor deve essere protetto da modifiche non autorizzate.
+- *Verifiable*: deve essere possibile verificare che il reference monitor funzioni correttamente e rispetti
+  le regole di accesso definite nella policy.
 
 
+  == DAC vs MAC 
+
+  Ci sono due principali modelli di access control: Discretionary Access Control (DAC) e Mandatory Access Control (MAC).
+
+  - *Discretionary Access Control (DAC)*: Il proprietario della risorsa ha il controllo 
+    discrezionale su chi può accedere alla risorsa. Gli utenti possono concedere o 
+    revocare l'accesso ad altri utenti a loro discrezione. Questo modello è flessibile 
+    ma può essere meno sicuro, poiché gli utenti potrebbero concedere accesso a persone 
+    non autorizzate.
+
+  - *Mandatory Access Control (MAC)*: In questo modello, l'accesso alle risorse è 
+    controllato da regole di sicurezza definite dall'amministratore del sistema. 
+    Gli utenti non hanno il controllo discrezionale sull'accesso alle risorse. 
+    Questo modello è più sicuro, poiché le regole di accesso sono rigorose e non 
+    possono essere modificate dagli utenti. L'accesso è controllato da etichette di sicurezza:
+    i soggetti hanno un livello di sicurezza e ogni risorsa classificata. È spesso definito 
+    con _multi-level security_.
+
+    #figure(
+  image("images/mls.png", width: 80%),
+  caption: "Modello di access control Mandatory Access Control (MAC) con multi-level security",
+)
+
+  Le informazioni classificate sono associati ad uno o più _compartimenti_ che descrive i 
+  soggetti.
+
+L'access control può essere visto come Accesso Control Matrix, dove 
+le righe rappresentano i soggetti, le colonne rappresentano gli oggetti e le 
+celle contengono i permessi di accesso.
+Questo modello permette di visualizzare chiaramente chi ha accesso a cosa e 
+con quali permessi.
+
+#figure(
+  image("images/acl_mat.png", width: 80%),
+  caption: "Access Control Matrix",
+)
+
+=== Bell-LaPadula Model (BLP)
+
+Bell-LaPadula è un modello di sicurezza informatica sviluppato negli anni '70 
+per garantire la confidenzialità delle informazioni in sistemi multi-livello. 
+Il modello si basa su due principi fondamentali: il principio del "no read up" (NRU) e 
+il principio del "no write down" (NWD).
+
+- *No Read Up (NRU)*: Un soggetto con un livello di sicurezza più basso 
+  non può leggere informazioni da un oggetto con un livello di sicurezza più alto. 
+  Questo principio garantisce che le informazioni sensibili non vengano divulgate a 
+  soggetti non autorizzati.
+- *No Write Down (NWD)*: Un soggetto con un livello di sicurezza più alto 
+  non può scrivere informazioni in un oggetto con un livello di sicurezza più basso.
+
+=== Biba
+
+Biba invece è un modello di sicurezza informatica sviluppato per garantire l'integrità 
+delle informazioni. Oggetti e soggetti fidati non devono essere contaminati. 
+Cerca di prevenire i dati da essere modificati che ha i ruoli invertiti
+di BLP ovvero: 
+
+- *No Read Down (NRD)*: Un soggetto con un livello di sicurezza più alto 
+  non può leggere informazioni da un oggetto con un livello di sicurezza più basso. 
+  Questo principio garantisce che le informazioni sensibili non vengano lette da 
+  soggetti non autorizzati.
+- *No Write Up (NWU)*: Un soggetto con un livello di sicurezza più basso
+  non può scrivere informazioni in un oggetto con un livello di sicurezza più alto. 
+  Questo principio garantisce che le informazioni sensibili non vengano modificate da 
+  soggetti non autorizzati.
+
+== Oltre al DAC 
+
+Ci sono alcuni limiti dovuti al DAC: 
+
+- Il numero di utenti aumenta 
+- Gli utenti cambiano le responsabilità 
+- I permessi devono essere frequentemente aggiornati
+- Gli accessi dipendono dal contesto 
+- Le risorse siono condivise tra team o progetti 
+
+Esistono altri tre modelli: 
+
+- *Role Based Access Control (RBAC)*: gli accessi non vengono dati dall'identità dell'utente
+  ma dal ruolo. Il ruolo dirà quello che può fare. Sfruttano il Least Privilege e quindi gli vengono dati 
+  permessi per fare svolgere solo le azioni del ruolo.
+- *Attribute Based Access Control (ABAC)*: Non guarda i ruoli ma guarda gli attributi.
+  Prendiamo per un esempio una porta con uno smart lock. Vorrei che la baby sitter possa entrare  
+  all'interno della casa solo in un certo orario o sfruttando altri environment; Oppure 
+  non poter accedere a documenti sensibili da fuori la rete aziendale.
+- *Relationship Based Access Control (ReBAC)*: È la relazione con il soggetto proprietario della risorsa
+  cosa io posso o non posso vedere. Un project manager può accettare o rifiutare persone che si possono connettere alla risorsa.
+
+Nella sicurezza, bisogna comunque applicare il _zero-trust_ che dice 
+che non bisognerebbe mai fidarsi ma sempre verificarsi che un sistema 
+possa penetrare all'interno del sistema: continuamente valutare l'accesso, limitare 
+il movimento latera, verificare l'identità e il dispositivo.

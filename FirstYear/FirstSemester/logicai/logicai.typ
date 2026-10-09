@@ -146,7 +146,343 @@ The following two definitions are equal:
   - $v(not phi) = 1$ iff $v(phi) = 0$
 ])
 
+== Tautology 
+
+#def("3", [
+  Let $Gamma$ be a set propositions, $phi$ is a tautology if $forall v$ valuation, 
+  $
+    Gamma tack.rr arrow.double.r.l forall v: ([psi]_v = 1 " for all " psi in Gamma) arrow.double.r.l [phi]_v = 1
+  $
+])
+ 
+=== Reductio ad absurdum 
+
+What does it mean having the bottom as a logical consequence? We have: 
+
+$
+  Gamma, not alpha tack.rr bot arrow.double Gamma tack.rr alpha
+$
+
+Let's provide a valuation for the bottom symbol. 
+
+$
+  forall v. [abs(bot)]_v = 0
+$
+
+But if I have something like this: 
+
+$
+  Delta tack.rr bot 
+$
+Let's try to reason about it using the definition: 
+$
+forall v. [abs(Delta)]_v = 1 arrow.double [abs(bot)]_v = 1
+$
+Now let's see the meta-conjuction as a disjunction using this theorem: 
+$
+  A arrow B := not A or B
+$
+
+So: 
+$
+  underbrace([abs(Delta)]_v eq.not 1, forall v. exists gamma in Delta "s.t." [abs(gamma)]_v = 0) or underbrace([abs(bot)]_v = 1, "false")
+$
+
+This is the meaning of having the bottom has a logical consequence. So: 
+
+$
+  forall v . exists gamma in Delta "s.t." [abs(gamma)]_v = 0 arrow Gamma union {not alpha} "unsat so" Gamma tack.rr alpha 
+$
+
+From this, we get the following principles:
+
+- $not alpha arrow.double.l.r.long alpha arrow bot$ 
+- $Gamma, alpha tack.rr beta arrow.double.long.l.r Gamma tack.rr alpha arrow beta$
+Let's unwrap this using the rules we have just shown: 
+
+$
+  Gamma, not alpha tack.rr bot arrow.double.long not alpha arrow bot 
+$
+
+So we can derive intuitively the following:
+
+$
+  not not alpha equiv alpha
+$
+
+We proved the left ($arrow.l$) direction, but let's now prove the right ($arrow.r$) direction:
+
+$
+  forall v. ([abs(Gamma)]_v = 1 arrow.double [abs(alpha)]_v = 1) arrow.double.long.l.r forall v. ([abs(Gamma)]_v = 1 arrow.double [abs(not not alpha)]_v = 1)
+$
+
+== Natural Deduction
+
+We now consider the persective of the so-called: inference making. 
+The origin of modern notion of inference making? 
+*David Hilbert* proposed a system called *Hilbert-style Deductive System* which is a set of axioms and inference rules. Several mathimaticians understood that this style is not very close to the usual practice of reasoning, so Gentzen proposed *Sequent Calculi* and *Natural Deduction*. In the 60', Dag Brawitz structured Natural Deduction and wrote a beutiful reference called *Natural Deduction: A Proof Theoritical Study*, which is the very first step towards automated theorem proving. 
+
+The structure of Natural Deduction is based on the notion of a _proof tree_, which is a tree where each node is a formula and each edge is an inference rule. The root of the tree is the conclusion and the leaves are the premises.
+
+#align(center, 
+prooftree(rule(
+  label: [Label],
+  name: [Rule name],
+  [Premise 1],
+  [Premise 2],
+  [Premise 3],
+  [Conclusion],
+)
+))
+
+There are usually two kind of rules: 
+
+- *Introduction rules*: they introduce a new connective in the conclusion.
+- *Elimination rules*: they eliminate a connective from the premises.
+
+For example: 
+
+// Elimination of implication 
+- Elimination rule for implication: #align(center, 
+prooftree(rule(
+  name: $arrow E$,
+  $phi arrow psi$,
+  $phi$,
+  $psi$,
+)))
+- Introduction rule for implication: #align(center,
+prooftree(rule(
+  name: $arrow I$,
+  $Gamma, phi tack psi$,
+  $Gamma tack phi arrow psi$,
+)))
+
+Let's prove some basic tautologies: 
+
+- $A arrow A$
+#align(
+center,
+prooftree(rule(
+  name: $arrow I^1$,
+    $[A]^1$,
+  $A arrow A$,
+))
+)
+
+Let's now add the *Conjunction* rule: 
+
+- Introduction rule for conjunction: #align(center,
+prooftree(rule(
+  name: $and I$,
+  $phi$,
+  $psi$,
+  $phi and psi$,
+))
+)
+- Elimination and introduction rule for conjunction: #align(center, [
+#prooftree(rule(
+  name: $and E_1$,
+  $phi and psi$,
+  $phi$,
+))
+#prooftree(rule(
+  name: $and E_2$,
+  $phi and psi$,
+  $psi$,
+))
+]
+)
+- Introduction and elimination rule for disjunction: #align(center, [
+#prooftree(rule(
+  name: $or I_1$,
+  $phi$,
+  $phi or psi$,
+))
+#prooftree(rule(
+  name: $or I_2$,
+  $psi$,
+  $phi or psi$,
+))
+#prooftree(rule(
+  name: $or E$,
+  $phi or psi$,
+  $Gamma, phi tack chi$,
+  $Gamma, psi tack chi$,
+  $Gamma tack chi$,
+))]) Elimination rule for disjunction is a bit more complex, since it requires two premises and a conclusion and it introduce proof by cases.
+- Ex falso: #align(center,
+  prooftree(rule(
+    name: $bot E$,
+    $bot$,
+    $phi$,
+  ))
+) Ex falso is accepted also in intuitionistic logic, but the following is not:
+- Reductio ad Absurdum (RAA), a *strong* classical principle
+#align(center, 
+  prooftree(
+    rule(
+      name: "RAA",
+      $Gamma, not phi tack bot$,
+      $Gamma tack phi$,
+    )
+  )
+)
+- Tertium non datur: #align(center, 
+  prooftree(
+    rule(
+      name: "TND",
+      $phi or not phi$,
+    )
+  )
+)
+
+  In a classical context you always know if a formula is true or false.
+  In order to prove this, I need to use the RAA rule.
+
+  #align(center, 
+  prooftree(
+    rule(
+    name: $arrow E$,
+    rule(
+      $not alpha or alpha$,
+      $not (alpha or not alpha)$,
+      $bot$,
+    ),
+    $alpha or not alpha$
+    )
+  ))
+
+  // Continua a casa
+
+
+#thm("Pierce's law", [
+  Pierce's law is a theorem in propositional logic that states:
+$
+  ((P arrow Q) arrow P) arrow P
+$ 
+])
+
+The computational equivalent of Pierce's law is the type of the constructor *call_cc* in Scheme. The derivation of Pierce's law is interesting since
+we need to use the classical principles: 
+
+#align(center, 
+  prooftree(
+    rule(
+      name: $arrow I^3$,
+      rule(
+        name: $"RAA"^2$,
+        rule(
+          name: $arrow E$,
+          rule(
+            name: $arrow E$,
+            rule(
+              name: $arrow I^1$,
+              rule(
+                name: "EF",
+                rule(
+                  name: $arrow E$,
+                  $[alpha]^1$,
+                  $[not alpha]^2$,
+                  $bot$,
+                ),
+                $beta$
+              ),
+              $alpha arrow beta$
+            ), 
+            $[(alpha arrow beta) arrow alpha]^3$,
+            $alpha$
+        ),
+        $not alpha$,
+        $bot$
+      ), 
+      $alpha$
+    ),
+    $((alpha arrow beta) arrow alpha) arrow alpha$
+  )
+  )
+)
+
+This is the derivation of the Pierce's law.
+Redundant rules can be eliminated, in some other deductive systems, but in Natural Deduction we need to keep them so we can close the derivation tree.
+
+=== Derivation 
+
+A derivation $phi$ is a finite tree of formulas where each node is a formula and each edge is an inference rule. The root of the tree is the conclusion and the leaves are the premises.
+
+#def("Derivability", [
+  Let $cal(L)$ be a language and $Gamma$ a set of formulas
+
+    + $Gamma subset.eq "WFF"_(cal(L))$ derives $phi$ ($Gamma tack phi$) if there exists $Pi / phi$ s.t. $cal(H)p[Pi] subset.eq Gamma$
+    + $phi$ is a theorem if $emptyset tack phi$
+])
+
+#def("Eliminability", [
+  An inference rule $R$ is eliminable if for each derivation $Pi / phi$ in which $R$ is used there exists another derivation $Pi^* / phi$ in which $R$ is not used and $cal(H)p[Pi^*] subset.eq cal(H)p[Pi] subset.eq Gamma$.
+])
+
+#def("Equivalence", [
+  Let's take two different deductive systems $I$ and $J$. $I$ and $J$ are equivalent if:
+  $
+    forall Gamma, phi, Gamma tack_I phi arrow.double.long.r.l Gamma tack_J phi
+  $ 
+])
+
+Exercise for home: Prove that we can sussume / replace in the derivation,
+EX FALSO by RAA and in the hint is copying the following proof: 
+
+#thm("Example", [
+Let's define $cal(N)$ natural deduction, with this set of rules: {EF, RAA, TND, $arrow I\/E$, $and I\/E$, $or I \/E$}.
+
+$
+  cal(N)^* := cal(N) backslash {"RAA"} union {"TND"}
+$
+
+*and $cal(N)$ and $cal(N)^*$ are equivalent.*
+])
+Proof: 
+$
+  forall phi$ $Pi / phi$ in $cal(N), exists Pi^* / phi$ in $cal(N)
+$
+$
+  cal(H)p[Pi] = cal(H)p[Pi^*]
+$
++ Base case: $Pi equiv phi$ is a derivation of length 1, then $Pi^* = Pi$.
++ Inductive step: $Pi = frac(Pi_1 dots Pi_k , phi)r$
+  1. $r eq.not "RAA"$ by IH 
+  $
+    frac(Pi_1^* dots Pi_k^*, phi)r = Pi^*
+  $
+  2. $r = "RAA"$
+
+  $
+    Pi = prooftree(
+      rule(
+        name: "RAA",
+        Pi_1,
+        phi
+      )
+    )
+  $
+
+  $
+    Pi^* = prooftree(
+      rule(
+        name: "TND",
+        Pi_1^*,
+        phi
+      )
+    )
+  $
+
+  FINIRE A CASA
+
+
+
+
+
 /* Examples 
+
+
 #let tree = rule(
   label: [Label],
   name: [Rule name],
