@@ -441,7 +441,7 @@ $
 ])
 Proof: 
 $
-  forall phi$ $Pi / phi$ in $cal(N), exists Pi^* / phi$ in $cal(N)
+  forall phi$ $Pi / phi$ in $cal(N), exists Pi^* / phi$ in $cal(N)^*
 $
 $
   cal(H)p[Pi] = cal(H)p[Pi^*]
@@ -476,68 +476,133 @@ $
 
   FINIRE A CASA
 
+== Soundness and Completeness
 
 
+There are two main property about a logic that we would like to connect: syntax and semantics. To do that, we want to have soundness and completeness for the System.
+
+$
+  tack phi arrow.double.long.l.r tack.rr phi
+$
+
+Where $arrow.double.long$ is *soundness* and $arrow.double.long.l$ is *completeness*.
+
+There's a nice application of the soundness theorem which is the following one: 
+
+Note: 
+$
+tack phi arrow.long.double tack.rr phi tilde tack.rr.not phi arrow.long.double tack.not phi
+$
+since 
+$
+  A arrow B arrow.double.l.r not B arrow A
+$
+
+= First Order Logic
+
+First Order Logic is a logical system that extends propositional logic by adding quantifiers and variables. It allows us to reason about objects and their properties. 
+
+Sometimes I would like to express a formal language. 
+Let's take this language: 
+
+$
+  cal(L) = {a^n b^n | n >= 0}
+$
+
+We have an alphabet: 
+
+$
+  <r_1, dots, r_n; a_1, dots, a_m; k > " with " r_i >= 0, a_j > 0
+$
+
+- Predicate symbols: $P_1, dots, P_n$ where $n$ is the arity of the predicate.
+- Function symbols: $f_1, dots, f_m$ where $m$ is the arity of the function.
+- Constant symbols: $c_1, dots, c_k$ where $k$ is the number of constants.
+- Variables: $x_1, dots, x_l$ where $l$ is the number of variables. (countably many: $|"VAR"| = aleph_0$)
+- Connectives: $not, and, or, arrow, arrow.l.r, bot, forall, exists$
+- Auxialiary symbols: $(, )$
+
+#def("Terms", [
+  TERM is the smallest set $X$ with the properties: 
+
+  - $c_i in X (i in I)$ and $x_i in X (i in N)$.
+  - $t_1, dots, t_(a_i) in X arrow.long.double f_i(t_1, dots, t_(a_i)) in X$ for $1 <= i <= m$.
+
+  TERM is our _set of terms._
+])
+
+#def("Formulas", [
+  FORM is the smalles set $X$ with the properties:
+  - $bot in X; P_i in X$ if $r_i = 0; t_1, dots, t_(r_i) in$ TERM $arrow.long.double P_i(t_1, dots, t_(r_i)) in X; t_1, t_2 in$ TERM $arrow.double t_1 = t_2 in X$,
+  - $phi, psi in X arrow.long.double (phi and psi), (phi or psi), (phi arrow psi), (psi arrow.l.r phi) in X$,
+  - $phi in X arrow.long.double (not phi) in X$,
+  - $phi in X arrow.long.double (forall x_i phi), (exists x_i phi) in X$.  
+])
+
+#def("Induction for terms", [
+  Let $A(t)$ be a property of terms. If it holds for $t$  a variable or a constant and if $A(t_1), dots A(t_n) arrow.double A(f(t_1, dots, t_n))$ for all function $f$ then $A(t)$ holds for all $t in$ TERM.
+])
+
+#def("Induction for formulas", [
+  Let $A(phi)$ be a property of formulas. If:
+
+  - $A(phi)$ for atomic $phi$
+  - $A(phi)$ and $A(psi)$ implies $A(phi and psi), A(phi or psi), A(phi arrow psi), A(psi arrow.l.r phi)$
+  - $A(phi)$ implies $A(not phi)$
+  - $A(phi)$ implies $A((forall x_i)phi, A((exists x_i)phi)$ for all $i$ then $A(phi)$ holds for all $phi in$ FORM.
+])
 
 
-/* Examples 
+#def("Free variables", [
+  The set $"FV"(t)$ of free variables of $t$ is defined by: 
+
+  - $"FV"(x_i) := {x_i}$, $"FV"(overline(c)_i) := emptyset$
+  - $"FV"(f_i(t_1, dots, t_(a_i))) := "FV"(t_1) union dots union "FV"(t_n)$
+])
 
 
-#let tree = rule(
-  label: [Label],
-  name: [Rule name],
-  [Premise 1],
-  [Premise 2],
-  [Premise 3],
-  [Conclusion],
-)
+#def("Free variables for formuals", [
+  The set $"FV"(t)$ of free variables of $t$ is defined by: 
 
-#prooftree(tree)
+  - $"FV"(P(t_1, dots, t_n)) := "FV"(t_1) union dots union "FV"(t_n)$
+  - $"FV"(t_1 = t_2) := "FV"(t_1) union "FV"(t_2)$
+  - $"FV"(phi and psi) := "FV"(phi) union "FV"(psi)$, $"FV"(phi or psi) := "FV"(phi) union "FV"(psi)$, $"FV"(phi arrow psi) := "FV"(phi) union "FV"(psi)$, $"FV"(psi arrow.l.r phi) := "FV"(phi) union "FV"(psi)$
+  - $"FV"(forall x_i phi) := "FV"(exists x_i phi) := "FV"(phi) - {x_i}$
+])
 
-#let variable = prooftree(rule(
-  name: [Variable],
-  $Gamma, x : A tack x : A$,
-))
-#let abstraction = prooftree(rule(
-  name: [Abstraction],
-  $Gamma, x: A tack P : B$,
-  $Gamma tack lambda x . P : A => B$,
-))
+#def("Closed variables", [
+  $phi$ is closed variable if 
+  $
+    "FV"(phi) = emptyset
+  $
+  A closed formula is also called a _sentence_. 
+  A formula without quantifiers is called _open_ formula. 
+])
 
-#let application = prooftree(rule(
-  name: [Application],
-  $Gamma tack P : A => B$,
-  $Delta tack Q : B$,
-  $Gamma, Delta tack P Q : B$,
-))
+#def("Subformulas", [
+  A subformula can be inductively defined:
+  - $"sub"(phi) = {phi}$
+  - $"sub"(phi dot.big psi) = "sub"(phi) union "sub"(psi) union {phi dot.big psi}$ for $dot.big in {and, or, arrow, arrow.l.r}$
+  - $"sub"(not phi) = "sub"(phi) union {not phi}$
+  - $"sub"(forall x_i phi) = "sub"(exists x_i phi) = "sub"(phi) union {forall x_i phi, exists x_i phi}$
+])
 
-#let weakening = prooftree(rule(
-  name: [Weakening],
-  $Gamma tack P : B$,
-  $Gamma, x : A tack P : B$,
-))
+#def("Free and Bound occurrences", [
+An occurence of a variable $x$ in $delta$ is BOUND, if $x$ occurs in $phi in "sub"{delta}$ and $phi equiv {"Q"x.phi}$ ... FINIRE A CASA
+])
 
-#let contraction = prooftree(rule(
-  label: [Contraction],
-  $Gamma, x : A, y : A tack P : B$,
-  $Gamma, z : A tack P[x, y <- z]: B$,
-))
-
-#let exchange = prooftree(rule(
-  label: [Exchange],
-  $Gamma, x : A, y: B, Delta tack P : B$,
-  $Gamma, y : B, x: A, Delta tack P : B$,
-))
-
-#align(center, rule-set(
-  variable,
-  abstraction,
-  application,
-  weakening,
-  contraction,
-  exchange
-))
-
-#thm("ciao", lorem(100))
-*/
-
+#def("Substitution", [
+  We define substitution of a variable $x$ with a term $t$ in a formula $phi$ as follows:
+  $
+    phi[t\/x]
+  $
+  if $x$ is free:
+  $
+  phi[t\/x] = (dots t dots)
+  $
+  if $x$ is bound:
+  $
+  phi[t\/x] = (dots x dots)
+  $
+  So $t$ needs to be free for $x$ in $phi$.
+])
