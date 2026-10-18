@@ -606,3 +606,4 @@ An occurence of a variable $x$ in $delta$ is BOUND, if $x$ occurs in $phi in "su
   $
   So $t$ needs to be free for $x$ in $phi$.
 ])
+

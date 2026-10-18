@@ -1,6 +1,8 @@
 #import "@preview/curryst:0.6.0": rule, rule-set, prooftree
 #import "@preview/showybox:2.0.4": *
-#import "@preview/codly:1.3.0": *
+#import "@preview/hydra:0.6.3": hydra
+#import "@preview/theorion:0.6.0": *
+
 
 #let conf(
   title: (),
@@ -17,18 +19,19 @@
   ),
   doc,
 ) = {
+
   // Global document setup
   set document(title: title, author: author.name)
-  set page(header: context {
-    // Gets the last heading before the current page and uses it as the header text
-    let headings = query(selector(heading.where(outlined: true)).before(here()))
-
-    let header-text = if headings.len() > 0 {
-      headings.last().body
+  set page(paper: "a4", margin: (y: 5em), numbering: "1", header: context {
+    if calc.odd(here().page()) {
+      align(right, emph(hydra(1)))
+    } else {
+      align(left, emph(hydra(2)))
     }
-
-    align(right, text(size: 9pt, header-text))
+    line(length: 100%)
   })
+  set heading(numbering: "1.1")
+  show heading.where(level: 1): it => pagebreak(weak: true) + it
   set text(font: "New Computer Modern", size: 11pt, lang: "it")
   set par(justify: true, leading: 0.75em)
   set heading(numbering: "1.1")
@@ -63,8 +66,6 @@
     v(20pt)
     text(size: 9pt, fill: luma(120))[Anno Accademico #accademic_year]
   })
-
-  pagebreak()
 
   // Table of contents
   //show outline.entry.where(level: 1): set block(above: 1cm)
@@ -106,6 +107,24 @@
     title-color: green.lighten(30%),
     body-color: green.lighten(95%),
     footer-color: green.lighten(80%)
+  ),
+  breakable: true
+)[
+ #content
+]
+  v(8pt)
+}
+
+
+#let ex(content) = {
+  v(8pt)
+  showybox(
+  title: "Example",
+  frame: (
+    border-color: orange,
+    title-color: orange.lighten(30%),
+    body-color: orange.lighten(95%),
+    footer-color: orange.lighten(80%)
   ),
   breakable: true
 )[
