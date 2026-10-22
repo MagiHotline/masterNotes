@@ -371,3 +371,4 @@ the radius of the sphere to include $k$ samples.
 )
 Notice that the estimate can be "jagged" and discontinuities in the slopes 
 generally occur along lines away from the positions of the points themselves.
+

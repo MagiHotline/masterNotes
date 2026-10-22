@@ -607,3 +607,170 @@ An occurence of a variable $x$ in $delta$ is BOUND, if $x$ occurs in $phi in "su
   So $t$ needs to be free for $x$ in $phi$.
 ])
 
+
+But first let's show some other theorem using Natural Deduction.
+
+#ex[
+  _Proof._ $
+  tack underbrace((phi arrow exists x.phi(x)),alpha) arrow underbrace(exists x. (phi arrow psi(x)), beta)
+  $
+
+  This is not a theorem in general, we'll need to fix some constraints: $x in.not F V(phi)$. 
+  We could try to understand if we are dealing with classical principles. Let's break down how to approach this derivation:
+    - ($phi arrow exists x. phi(x)$) will probably need to be derived using the $arrow I$ rule, so we need to assume $phi$ and derive $exists x. phi(x)$. So 
+    $
+      (phi arrow exists x . psi(x)) in cal(H)p[Pi]
+    $
+    - I 'destroy' these subformulas: $phi arrow exists x. psi(x)$ since I want to extract the body formula $psi$ and use it inside the second part of the theorem. The idea is to use $psi(x) in beta$.
+    - $exists x. psi(x)$ eliminate the $exists$ and derive from $psi(x)$ something of interest like $beta$ with $exists E$.
+    - Try to start from $not beta$ to derive $bot$ and then derive $beta$.)
+
+  #prooftree(
+      rule(
+        rule(
+          rule(
+            rule(
+              rule(
+                rule(
+                  rule(
+                    name: $not E$,
+                    rule(
+                      name: $exists E^1$,
+                      rule(
+                        name: $arrow E$,
+                        $[phi]^2$,
+                        $[phi arrow exists x. psi]^4$,
+                        $exists x. psi$,
+                      ),
+                      rule(
+                        name: $exists I$,
+                        rule(
+                          name: $arrow I$,
+                          $[psi]^1$,
+                          $phi arrow psi$,
+                        ),
+                        $exists x. (phi arrow psi)$,
+                      ),
+                      $exists x. (phi arrow psi)$,
+                    ),
+                    $[not (exists x. (phi arrow psi))]^3$,
+                    $bot$,
+                  ),
+                  $psi$
+                ),
+                $phi arrow psi$
+              ),
+              $exists x . (phi arrow psi)$
+            ),
+            $[not (exists x. (phi arrow psi))]^3$,
+            $bot$
+          ),
+          $exists x. (phi arrow psi)$
+        ),
+      $(phi arrow exists x . psi) arrow (exists x. (phi arrow psi(x)))$
+    ) 
+  )
+]
+
+== Completeness Theorem
+
+We want to prove exactly this:
+$
+  tack.rr phi arrow.double.long tack phi
+$
+_If for each structure it's satisfafiable then we can derive it._ 
+This proof was firstly formulated by Kurt Godel. 
+Before jumping into the proof wen need to introduce an important concept of *Consistent Sets*.
+Note that $W F F$ stands for the set of well-formed formulas.
+$
+  Gamma subset.eq W F F_(cal(L)) &"is consistent if" Gamma tack.not bot\
+  & "not consistent if" Gamma tack bot 
+$
+
+We also need to introduce the notion of _maximally consistent sets_.
+#def("Characterization of inconsistent Set")[
+  $
+  Gamma tack bot arrow.long.double.l.r forall phi . Gamma tack phi arrow.long.double.l.r exists phi . Gamma tack phi and Gamma tack not phi
+  $
+]
+
+#def("Maximally consistent set")[
+  $
+  Gamma tack.not bot &Gamma "is maximally consistent if " Delta tack.not bot, Gamma subset.eq Delta arrow.long.double Gamma = Delta
+  $
+]
+
+Let's define these other propositions:
+
+#def("Proposition 1")[
+  $
+    Gamma subset.eq W W F_(cal(L)) "if" Gamma tack bot "then" forall L "interpration"\
+    U and rho_U, rho_U tack.rr Gamma
+  $
+  If theres a structure that satisfy Gamma, the set is consistent. Equivalently: 
+  $
+    "if" exists U.rho_U s.t. U . rho_U tack.rr Gamma arrow.long.double Gamma tack.not bot
+  $
+]
+
+Our main proposition GOAL is: 
+$
+  Gamma subset.eq (W W F)_(cal(L)) "if" Gamma tack.not "then" Gamma "sat".
+$
+This is the key result for the completeness theorem. 
+
+=== Proof 
+
+We'll include only a fragment of the possible connectives: ${and, arrow, bot, forall}$.
+But we want to reason in an existential style since it's better to find a weakness in respect to find a universal argument. Let's define some abbreviations like:
+$
+  not phi := phi arrow bot\
+  exists x. phi := not forall x. not phi
+$
+The first defintion is the one of *Henkin Set*: 
+
+#def("Henkin Set")[
+  $Gamma subset.eq (W F F )_cal(L)$ is an Henkin Set if for each $exists x. phi(x)$ there exists a constant $c$ such that:
+  $
+    Gamma tack  exists x . phi(x) arrow phi(c)
+  $
+  Notice that we extending the language.
+]
+
+#def("Proposition 2")[
+  If $Gamma$ is an Henkin Set and $Delta subset.eq W F F_cal(L)$ with respect $Gamma subset.eq Delta$, $Delta$ is an Henkin Set. 
+]
+
+We'll now have to introduce the notion of 'H-extension'.
+
+#def("H-extension")[
+  This defintion is split in two parts:
+  - $L$ language, we call 'H-extension' of $L$ a new language $L^H$ obtained by adding to the set of constants of $L$ the following set: 
+  $
+    H C = {c_phi | exists x . phi "is an L formula" }
+  $
+  - Given $Gamma subset.eq W F F_cal(L)$, the 'H-extension' of $Gamma$ with $L^H$ formulas is:
+  $
+    Gamma union {exists x. phi(x) arrow phi(c_phi) | exists x. phi "is in" L "and" c_phi in H C  }
+  $
+]
+
+So I would like to connect derivability from the L language also in the H-extension.
+
+#def("Lemma 4")[
+  Suppose $Gamma union {phi}$ and $Gamma tack phi$. If I am deriving this in the H-extension of the language then I can derive it in the original language.
+  $
+    Gamma tack_(L^H) phi arrow.long.double.l.r Gamma tack_L phi
+  $
+  The cardinality fo the language: 
+  $
+    hash[cal(L^H)] = hash[cal(L)] \
+    hash[cal(L)] = max(hash[R], hash[F], hash[C], aleph_0)
+  $
+
+  #ex[
+  We know that $aleph_0 = abs(NN)$. 
+  Also $abs(ZZ) = abs(QQ) = aleph_0$. Also if I take the set of $abs("Prime") = aleph_0$. If you can find a bijection between the set of natural numbers and another set, you can say it's countable.
+  Also $abs(RR) = 2^(aleph_0).$
+  ]
+]
