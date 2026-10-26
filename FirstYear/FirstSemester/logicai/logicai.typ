@@ -768,9 +768,108 @@ So I would like to connect derivability from the L language also in the H-extens
     hash[cal(L)] = max(hash[R], hash[F], hash[C], aleph_0)
   $
 
+
   #ex[
   We know that $aleph_0 = abs(NN)$. 
   Also $abs(ZZ) = abs(QQ) = aleph_0$. Also if I take the set of $abs("Prime") = aleph_0$. If you can find a bijection between the set of natural numbers and another set, you can say it's countable.
   Also $abs(RR) = 2^(aleph_0).$
   ]
+]
+
+We skip the proof of the Henkin extension (Lemma 5), but we can say that it is a very important result in order to prove the completeness theorem.
+
+#def("Lemma 6")[
+  $Gamma$ formulas is $W F F_cal(L)$,
+  $
+    forall phi in cal(L), underbrace(Gamma^H,"Henkin Extension") tack phi arrow.long.double Gamma tack phi
+  $
+]
+
+Another proposition that follows:
+
+#def("Proposizione 7")[
+  $Gamma subset.eq W F F_cal(L)$, if $Gamma$ consistent ($Gamma tack.not bot$) $arrow.double.long$ $Gamma^H tack.not bot$.
+]
+
+#def("Henkin Closure")[
+  $Gamma subset.eq W F F_cal(L)$, consider the following sequence:
+  $
+    &Gamma_0 = Gamma " if " L = L_0\
+    &Gamma_(i+1) = (Gamma_i)^H " if " L_(i+1) = L_i^H
+  $ 
+  The *Henkin closure* of $Gamma$:
+  $
+    Gamma^* = union_{i in NN} Gamma_i "     " L^* = union_{i in NN} L_i
+  $ 
+]
+
+#def("Theorem 9 ")[
+  $Gamma subset.eq W F F_cal(L)$ and $Gamma tack.not bot$:
+
+  + $\#[Gamma^*] = \#[Gamma]$
+  + $Gamma^* tack.not bot$ (This proof is _required_)
+  + $Gamma^*$ is a Henkin Set
+  + $forall phi in W F F_cal(L)$, $Gamma^* tack phi arrow.double Gamma tack phi$ 
+]
+
+If you want to a more classical proof, we need to use a very different semantics 
+for the first order language: 
+
+#ex()[
+  _Proof of Point 2 of Theorem 9_:
+  $
+    Gamma^* tack.not bot
+  $
+  Suppose $Gamma^* tack bot$. Then there exists a finite set $Sigma^0$ ($Sigma^0 subset.eq Gamma$) such that
+  $Sigma^0 tack bot$ and $Sigma^0 eq.not emptyset$.
+  $Sigma^0 = {phi_0, dots, phi_n}$, there exist $n$ such that:
+  $
+    Gamma_i_i, dots, Gamma_i_n "in the Henkin sequence" ("not nec" Gamma_i_j eq.not Gamma_i_z)
+  $
+  such that $phi_1 in Gamma_i_1$, dots, $phi_n in Gamma_i_n$.
+  Let $m = max(i_1, dots, i_n)$ then $Sigma^0 subset.eq Gamma_m$. 
+  $
+    Gamma_m tack bot arrow.long.double "impossible"
+  $
+]
+
+#def("Intermezzo: Zorn's Lemma (Hausdroff's' 1914)")[
+  Let $<U, <= >$ be a partially ordered set such that every $V subset.eq U$ which is
+  totally ordered by $<=$ has an upper bound in $U$. Then $U$ has a maximal member $z$
+  w.r.t  $<=$ (no $x in U$ such that $x >= z$).
+
+  Zorn's Lemma is equivalent to _Axiom of Choice_. 
+]
+
+#def("Theorem 10 (Lindenbaum's Lemma)")[
+  $Gamma subset.eq W F F_cal(L)$, $exists Gamma^"MC"$, $Gamma subset.eq Gamma^"MC"$ such that:
+  $
+    Gamma^"MC" "maximally consistent"\
+    Gamma^"MC" "is an Henkin Set"
+  $
+
+
+#ex()[
+  _Proof._
+  Given that $Gamma^*$ is consistent and Henkin.
+  $
+    E(Gamma^*) = { Delta | Delta tack.not bot, Delta subset.eq W F F_cal(L), Gamma^* subset.eq Delta}
+  $
+  Take $<E(Gamma^*), subset.eq>$, which is a partially ordered set.
+  Let $Sigma = union.big_k Delta$ where $k$ is a chain in $E(Gamma^*)$.
+
+  - $Sigma$ is an upper bound of $k$. 
+  - $Sigma tack.not bot$.
+
+  For RAA, suppose $Sigma tack bot$. As for the previous proofs, there exists $Sigma^0 subset Sigma$
+  such that $Sigma^0 tack bot$ which is not empty and I can say that $Sigma^0 = {phi_1, dots, phi_n}$. 
+  then $exists n$ elements $k_1, dots, k_n$ is the chain $k$ such that $phi_1 in underbrace(k_1, Delta_i_j), 
+  dots, phi_n in underbrace(k_n, Delta_n_j)$.
+  Since $K$ is an ordered chain ($subset.eq$), $exists K^+$ such that $Sigma^0 subset.eq K^+ arrow.double K^+ tack bot$.
+  Which is not possible.  
+
+  By Zorn's Lemma, if we consider the construction $< E(Gamma^*), subset.eq >$ has an upper bound $(Gamma^*)^"MC"$
+  which is an Henkin Set and also maximally consistent. 
+  So $Gamma subset.eq Gamma^*$. $square$
+]
 ]
