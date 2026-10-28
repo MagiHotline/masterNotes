@@ -258,7 +258,142 @@ I framework MITRE (organizzazione no-profit americana) ATT&CK è una base di con
   caption: "MITRE ATT&CK e PRE-ATT&CK",
 )
 
+== Attacchi AI 
 
+L'IA predittiva si riferisce a sistemi di intelligenza artificiale che utilizzano analizi statiche e algoritmi d
+machine learning per fare predizioni. 
+L'obiettivo di un attacco a sistemi AI mirano a compromettere la sicurezza, 
+l'integrità o la disponibilità di un sistema AI. 
+Alcuni esempi di attacchi includono:
 
+=== Targeted Poisoning 
 
+Solo alcune categorie di dati vengono compromesse. Per alcune dati 
+il modello genererà una previsione corretta, mentre per quei dati
+compromessi il modello genererà una previsione errata.
+Si usa il label flipping: inserirà nel modello di training dei dati
+favorevoli per l'attaccante, inserendo dati con label sbagliati.
+
+=== Backdoor Poisoning 
+
+Un attaccante può inserire un trigger nel modello di training, 
+che quando viene attivato, il modello genererà una previsione errata.
+
+=== Mitigating Poisoning Attacks 
+
+Alcune strategie per mitigare gli attacchi di avvelenamento 
+includono:
+- Data sanitization: rimuovere o filtrare i dati sospetti prima di
+ addestrare il modello.
+- Robust training: utilizzare tecniche di 
+  addestramento robuste che riducono l'impatto dei dati avvelenati.
+- Monitor Model performance: monitorare le prestazioni del modello per 
+  rilevare eventuali anomalie o cali di precisione che potrebbero indicare 
+  un attacco di avvelenamento.
+
+= Generative AI 
+
+== Attack Surface 
+
+== Attack Categories 
+
+There are several categories of attacks that can be performed usig GenAI: 
+
+- Prompt Injection: Manipulating the input prompts to influence the model's output 
+in a malicious way.
+- Sensitive Information Disclosure: Extracting confidential or sensitive information 
+from the model's responses.
+- Excessive Agency: Exploiting the model's ability to perform actions or make decisions 
+that could lead to unintended consequences.
+- Supply Chain Attacks: Targeting the underlying infrastructure, libraries, or dependencies 
+used by the generative AI model to introduce vulnerabilities or malicious code.
+- Data and Model Poisoning: Introducing malicious data or manipulating the training 
+process to compromise the model's behavior or outputs.
+- Unbounded Consumption: Exploiting the model's resource usage or computational 
+capabilities to cause denial of service or resource exhaustion.
+- Misinformation: Generating and spreading false or misleading information through the 
+model's outputs. 
+- Hiddent Context Exposure
+- Vector and Embeddings Weaknesses
+- Improper Output handling
+
+=== Prompt Injection
+
+EchoLeak is an example of attack with promp injection.
+#figure(
+  image("images/prompt_injection.png", width: 100%),
+  caption: "Prompt Injection",
+)
+
+=== Sensitive Information Disclosure
+
+Questo è un attacco dove il modello potrebbe dare informazioni che non era previsto condividere. 
+Questa è stata una vulnerabilità anche per *DeepSeek*. Hanno trovato che 30 dei server 
+associati a DeepSeek erano accessibili. Hanno trovato delle porte inusuali ad un database 
+Clickhouse contenuti i log degli utenti con il modello di Deepseek.
+
+Come si può fare per prevenire? Bisogna adottare delle misure di cifratura dei dati privati
+degli utenti. I server erano accessibili senza autenticazione quindi c'è bisogno di bloccare
+le porte dall'esterno con Firewall o altre protezioni.
+
+== Excessive Agency 
+
+=== OpenClaw 
+
+Una ricercatrice ha voluto testare le funzionalità di OpenClaw; ha testato 
+l'agente su una sandbox e poi sulla propria casella di posta. Il modello ha cominciato a 
+ignorare i comandi della ricercatrice. Quando il contesto e gli elementi da memorizzare 
+sono troppi, avviene il "Lost in The Middle". 
+
+Dobbiamo assegnare all'agente i privilegi solo per quello che vorremmo potesse modificare. 
+Le azioni critiche devono essere confermate da un umano. Bisogna inoltre avere la possibilità
+di intervenire e interrompere le azioni dell'attaccante oltre al costante controllo delle 
+loro azioni. 
+
+== Supply Chain 
+
+Un modello compromesso, dataset, plugin, libreria o servizio hostato introducono dei rischi 
+all'interno dell'applicazione AI.
+
+=== TorchTiron 
+
+#figure(
+  image("images/torchtriton.png", width: 100%),
+  caption: "Prompt Injection",
+)
+
+== Data and Model Poisoning
+
+=== VirusTotal Poisoning 
+
+Gli attaccanti hanno degradato le prestazione di VirusTotal in modo tale che una larga cateogria di esempi 
+potessero essere classificati come Ransomware. Così che ogni volta che un sample veniva 
+sottomesso come analisi, veniva classificato come Ransomware. 
+
+Le misure per controstare questo attacco sono le solite: sanatizzazione dei dati, controllare i label
+e i feedback per trovare eventuali anomalie. Verificare inoltre la provenienza dei dati.
+
+== Unbounded Consumption 
+
+Gli attacchi sfruttano costosi o operazioni unrestricted dei modelli per consumare token, compute e tempo.
+
+=== ShadowRay 
+
+Ray è un framework per addrestrare LLMs, esso supporta un esecuzione distribuita in parallelo
+di tutti i server. Gli attaccanti hanno scoperto che i cluster erano accessibili; 
+hanno scoperto che potevano aggiungere jobs alle macchine per compromettere e sovraccaricare 
+il compute. Hanno utilizzato la potenza di calcolo per fare cryptomining (cryptohijacking). 
+
+Il miglior modo per difendersi è inserire un limite all'utolizzo di token, richieste, ricorsione e costo. 
+
+== Misinformation 
+
+=== Package Hallucinations 
+
+== Hidden Content Exposure 
+
+Prompt di sistema, istruzioni nascoste, polizze interne o altri contesti diventano visibili 
+agli utenti o attaccanti. 
+
+=== System Prompt Leaked  
 
