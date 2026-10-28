@@ -372,3 +372,244 @@ the radius of the sphere to include $k$ samples.
 Notice that the estimate can be "jagged" and discontinuities in the slopes 
 generally occur along lines away from the positions of the points themselves.
 
+= Decision Trees 
+
+We are going to build a tree using the training data. 
+It is composed of terminal (or leafs) nodes and non-terminal nodes. 
+
+- *Non terminal nodes* have 2+ children and implement a routing function. 
+- *Leaf nodes* have no childres (terminal) and implement a prediciton function. 
+There are no cycles, all nodes have at most 1 parent excepting one, *the root node.*
+
+A decision tree takes an input $x in X$ and routes it through its node until it reaches a leaf node. Each nde represents a variable (feature). An adge to achild node represetns the predicted value for the class based on the values. In the leaf, a prediction takes place. 
+
+  #figure(
+  image("figures/tree.png", width: 30%),
+  caption: "Decision Tree"
+)
+
+Each non-terminal node $"Node"(phi, t_L, t_R)$ holds a routing function $phi in {L,R}^cal(X)$ such that there exists the left child $t_L$ and the right child $t_R$. When $X$ reaches the node, it will go to the left child if $phi(X) = L$ and to the right child if $phi(X) = R$. Here we assume that the tree is binary, but it can be generalized to more than 2 children.
+Each node $"Leaf"(h)$ holds a prediction function $h in cal(Y)^cal(X)$ such that when $X$ reaches the leaf, it will output the prediction $h(X)$.
+The decision tree function: 
+$
+  f(x)_t = cases(
+    h(X) "if" t = "Leaf"(h),
+    f(x)_(t_phi(x)) "if" t = "Node"(phi, t_L, t_R)
+  )
+  $
+
+== Training Algorithm 
+
+Given a training set: $cal(D) = {z_1, dots, z_n}$ we want to find a tree $t^star$:
+$
+  t^star = "arg"underbrace("min",t in T) E(f_t; D_n)
+$
+We want to find the tree that minimises the error $E(f_t; D_n)$ on the training set.
+This optimisation problem has many solutions. Thus we need to impose constraints, e.g., most compact tree otherwise it could be *NP-Hard*.
+
+You can also use _continous attributes_. Pick threshold to create a split. 
+
+#figure(
+  image("figures/learn_alg.png", width: 50%),
+  caption: "Decision Tree"
+)
+
+- We need to fix a set of leaf predictions
+- Fix a set of possible splitting functions 
+- Tree-growing strategy recursively partitions the training set 
+and decides whether to grow the leaves or non terminal nodes.
+
+=== ID3/Cart Algorithm 
+
+To explain this algorithm let's use an example.
+Let's look at this problem.
+  #figure(
+  image("figures/ex_cart.png", width: 80%),
+  caption: "Decision Tree"
+)
+- 14 training samples
+- 4 features: Outlook, Temperature, Humidity, Wind
+- 9 of them class "Yes" and 5 of them class "No"
+
+#figure(
+  image("figures/ex_cart_2.png", width: 80%),
+)
+How do you pick the best attribute? 
+- Which split do you find better and why? *Outlook*, because it has a pure subset. A "pure set" is an option that there will no way that the "no" class will be picked.
+- If you look at "wind", which subset of wind is better than the other? *Weak is better*, even though is not pure. 
+We want to measure *purity* of the split. 
+- We want to have more certain about Yes/No after the split. 
+- Pure set $arrow.long$ completely certain about Yes/No.
+- Impure set $arrow.long$ completely less certain.
+This measure should be symmetric, i.e., it should not matter which class is Yes or No. There are a lot of diffrent ways to measure the purity, for example *entropy*.
+
+=== Entropy 
+
+Assume that we have binary classes (positive and negatives). For each class:
+
+- p(+) is the proportion of positive in a subset
+- p(-) is the proportion of negative in a subset
+An *entropy* of _a subset_: 
+$
+  H(S) = -p(+) log_2 p(+) - p(-) log_2 p(-)
+$
+or 
+$
+  H(S) = sum_(c in C) -p(c) log_2 p(c)
+$
+- Impure set $arrow.long$ high entropy
+$
+  H(S) = dots =  1
+$
+- Pure set $arrow.long$ low entropy
+$
+    H(S) = dots = 0
+$
+The higher the entropy the more impure the set is. The lower the entropy the more pure the set is.
+
+=== Information Gain 
+
+We want to have maby items in the pure sets. We calculate the expected drop in entropy after each split:
+$
+  "Gain"(S,A) = H(S) - sum_(v in "Values"(A)) frac(|S_v|, |S|) H(S_v)
+$
+where: 
+- $V$ is possible values of A, 
+- $S$ the set of examples, 
+- $S_v$ subset where $X_A = V$.
+
+#figure(
+  image("figures/ex_cart_3.png", width: 80%),
+)
+We use information gain to decide which attribute to pick. We want to maximize the "information gain".
+- Take every attribute that you have in your data 
+- Compute gain for the attribute 
+- Select the attribute with the highest gain
+- Highest? The one that reduces the uncertainty the most. 
+We consider one split at a time, but remember the procedure is recursive.
+The pros are that:
+- Decision trees are interpretable,
+- It is possible to read the rules of the tree. There is concise
+description of what makes an item positive/negative.
+- No "black box", very important for users. 
+
+The problems of Information Gain is that sometimes just having pure subsets is not enough. It generalizes poorly in testing data. 
+How to handle this? One possibility is to use the heuristic *Gain Ratio*:
+$
+  "GainRatio"(S,A) = frac("Gain"(S,A), "SplitEntropy"(S,A))\
+  "SplitEntropy"(S,A) = -sum_(v in "Values"(A)) frac(|S_v|, |S|) log_2 frac(|S_v|, |S|)
+$
+where:
+- $A$ is the attribute,
+- $V$ are the possible values of $A$, 
+- $S$ is the set of examples,
+- $S_v$ is the subset where $X_A = V$,
+It _penalizes attributes with many values_.
+#figure(
+  image("figures/ex_cart_4.png", width: 60%),
+)
+#figure(
+  image("figures/ex_cart_5.png", width: 60%),
+)
+What are other measures? 
+- Entropy for classifications tasks, maximize the *information gain* 
+- Gini Impurity for classifications tasks, where you also need to maximize to *information gain*
+- Variance, for regression tasks, where you need to minimize the *variance*.
+
+Another problem with Decision trees is that they are very greedy so they may not find the best tree. There are also exponentially many trees. Also only axis-aligned splits are considered.
+
+== Gini Index 
+
+The original CART algorithm uses the GINI impurity, whereas ID3 uses Entropy or Information Gain. 
+$
+  "Gini" = 1 - sum_(i=1)^n p_i^2
+$
+While buildiing the decision tree, we would prefer to choose the features with the _least Gini index_ as the root node. This method is non-paramethric model since we are not assuming the distribution by calculating mean or variance. 
+
+== Overfitting 
+
+Decision trees are non-parametric models with a structure that is determined by the data. 
+As a result, they are flexible and can easily fit the training set, with a high risk of overfitting. 
+Standard techniques to improve generalisation apply also to decision trees (early stopping, regularization, data augmentation, complexity reduction, *ensembling*). 
+A technique to reduce complexity a posteriori is called *pruning* (an operation that is applied after tree building).
+
+=== Summary
+
+ID3 grows decision tree from the root to down: 
+- Greedily selects next best attribute using Information Gain,
+- Entropy: How uncertain we are in terms of Yes/No in a set
+- Inf. Gain: reduction in uncertainty following a split 
+- Searches a complete hypothesis space
+- Prefers smaller trees, high gain at the root
+- Overfitting addressed by post-pruning 
+  -Prune nodes, while accuracy increases on validation set
+- Fast, compact, interpretable  
+
+== Random Forests 
+
+Random forest are _ensembles_ of decision trees. Each tree is typically trained on a bootstrapped version of the training set (sampled with replacement). 
+
+#figure(
+  image("figures/rand_for.png", width: 90%),
+)
+
+To improve the performance, it's better to not put any bias inside the training set, so you will need to balance the tree.
+- Split functions are optimised on randomly sampled features or are sampled completely at random.
+- This helps to obtain decorrelated decision trees 
+- The final prediction of the forest is obtained by averaging the
+predictions of each tree in the ensemble $cal(Q) = {t_1, dots, t_n}.$
+$
+  f_cal(Q)(x) = frac(1, T) sum_(j = 1)^T f_t(x)
+$
+where $1/T$ is the average of $T$ number of trees.
+
+=== Ensemble methods
+
+The concept of combining multiple models to improve performance is called *ensemble learning*. There are different types:
+- Bagging
+- Boosting 
+- Stacking
+
+Many times, ensemble methods are made with "weak learners", rather than having a few complex methods. 
+A *weak learner* is a classification model that performs slightly better than random guessing.
+
+- For instance a binary classifcation task with balanced classes, this can be a classifier performing slightly better than 50% accuracy. For example k-NN with k=1 operating on one or a subset of input variables. Or a decision tree with a single node operating on one feature.
+
+== Bagging or bootstrapping 
+
+*Bagging* is a technique in which we train $N$ models on $N$ different sampling of our dataset. 
+This way, all models will have different predictions; we will average them in the end to obtain a single value.
+
+#figure(
+  image("figures/bagging.png", width: 90%),
+)
+
+== Boosting
+
+Trained models are weighted based on their performance. 
+The weak classifiers are learned sequentially. The more the previous classifier makes mistakes on a dataset, the more they are weighted for the enxt one. 
+
+#ex[
+  One example is called *AdaBoost* (Adaptive Boosting). It works by weighting the instances in the training dataset based on the accuracy of previous classifications.
+
+  #figure(
+    image("figures/adaboost.png", width: 70%),
+  )
+
+  + Use all training data and assing equal weights to each training sample to build a weak classifier. Check which training samples are correctly classified and which are not. 
+  + Assign more withgts to the incorrectly classified samples such thtat classfying them correctly becomes more important. 
+  + Re-iterate step 2 until all data points are correctly classified or until a maximum number of iterations is reached.   
+]
+
+=== Stacking
+
+Combines the predictions of multiple ML models (_called base models_) to improve the overall performance. 
+Different from boosting and bagging, the used base models are
+heterogenous. Can be used for both *regression* and *classification* problems. A powerful ensemble learning algorithm that can often improve the performance of individual models. 
+
+The basic idea of stacking is to first train a set of base modesl on the same dataset. The predictions of these base models are then used to train a meta-model, which is a higher-vel model that learns _how to combine the prediciton of the base models_ to make a better prediction.
+
+  #figure(
+    image("figures/stacking.png", width: 70%),
+  )
+
