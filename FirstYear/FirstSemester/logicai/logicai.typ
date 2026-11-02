@@ -873,3 +873,140 @@ for the first order language:
   So $Gamma subset.eq Gamma^*$. $square$
 ]
 ]
+In order to prove satisfiability, we need to define at least one model for the maximally consistent Henkin Set.
+We have to indroduce the notion of _syntactical modal_.
+
+#def("Proposition 11")[
+  $Gamma$ is maximally consistent: 
+
+  + $Gamma$ clsoed under derivability 
+  + $forall phi in W F F_cal(L), phi in Gamma "or" not phi in Gamma$
+  + $forall phi. not phi in Gamma arrow.double.long.l.r not phi in.not Gamma$
+  + $forall phi, psi (phi arrow psi) in Gamma arrow.long.double.l.r phi in Gamma arrow psi in Gamma$
+]
+
+#def("Proposition 12")[
+  Let $Gamma$ be a maximally consistent set. 
+  Let $tilde subset.eq W F F_cal(L) x W F F_cal(L)$ be $t tilde w$, $t, u in "TERMS" arrow.double.l.r.long t = u in Gamma$: 
+  $
+    tilde "equivalent relation"
+  $  
+  Also $|| t ||$ equivalent class of $t$:
+  $
+    || t || = {u in "TERMS" | t tilde u}  
+  $
+  $
+    Gamma backslash tilde " is a quotient set"
+  $
+] 
+
+#def("Proposition 13")[
+  $Gamma$ maximally consistent set $t_1, dots, t_n, u_1, dots, u_n$ terms s.t. $forall i in [1,n] t_i = u_i$:
+  + $forall f$ function symbol:
+    $
+      f(t_1, dots, t_n) tilde f(u_1, dots, u_n)
+    $
+  + $forall R$ relational symbol 
+    $
+      R(t_1, dots, t_n) in Gamma arrow.double.long R(u_1, dots, u_n) in Gamma
+    $
+] 
+
+#def("the syntactical model")[
+  $Delta in W F F_cal(L)$ maximally consistent Henkin set. 
+  $
+    cal(U) = < cal(C)^cal(L) backslash tilde, [ . ]^cal(U) >
+  $
+  defined as:
+
+  + $c^cal(U) = || c ||$, for the constant 
+  + $f in cal(F)^cal(L) (n "arity")$
+    $
+      f^cal(U) (||t_1||, dots, ||t_n||) = ||f(t_1, dots, t_n)||
+    $
+  + $R in cal(R)^cal(L)$ then
+    $
+      R^cal(U)(||t_1||, dots, ||t_n||) "iff" R(t_1, dots, t_n) in Gamma
+    $
+  This is also called the _syntactic interpratation_.
+]
+
+#def("Theorem 15")[
+  // fix
+  $Delta in W F F_cal(L)$ maximally consistent is the syntactic interpreation 
+  $rho_u$ is $rho_u(x) = ||x||$ then 
+  + $cal(U), rho_cal(U) tack.rr Delta$
+  (This one is not required but interesting)
+  + U, rho_u is a model of Delta
+    + $phi in Delta arrow.long.double cal(U), rho_cal(U) tack.rr phi$
+    + $phi in.not Delta arrow.long.double cal(U), rho_cal(U) tack.rr.not phi$
+
+    $phi := forall x. psi$: 
+
+    a) $forall x. psi in Delta overbrace(arrow.double.long, "Prop" 11 and forall E)$  
+      $forall t. psi[t/x] in Delta overbrace(arrow.double.long.l.r, "IH") forall t cal(U), rho_cal(U)
+      tack.rr psi[t/x] arrow.double.long.l.r forall t cal(U), rho_cal(U)[||t||_rho_cal(U) / x] tack.rr psi 
+      arrow.long.double.l.r forall t . cal(U), rho_cal(U)[||t|| / x] tack.rr psi
+      arrow.long.double.l.r cal(U), rho_cal(U) tack.rr forall x. psi square$         
+]
+
+#def("Lemma 16")[
+  $Gamma subset.eq W F F_cal(L)$ s.t. $Gamma tack.not bot$ then $Gamma$ is satisfafiable.
+  #ex[
+    _Proof._
+    Consider $Gamma^*$ (henkin set and MC) by TH15, we can define the syntactical model: 
+    $
+      &exists rho_cal(U) s.t. cal(U), rho_cal(U) tack.rr Gamma^*\ 
+      &arrow.double.long cal(U), rho_cal(U) tack.rr Gamma "   " square
+    $
+  ]
+]
+
+#def("Completeness Theorem")[
+  $
+  Gamma tack.rr phi arrow.double Gamma tack phi
+  $
+  #ex[
+    _Proof._
+    Let's follow the equivalence $A arrow B equiv not B arrow not A$ 
+    $Gamma tack.not phi$ then $Gamma tack.rr.not phi$. If $Gamma tack.not phi arrow.double$
+    $Gamma, not phi tack.not bot$ then by Lemma 16, $Gamma union {not phi}$.
+    $
+      &exists cal(U), rho_cal(U) "s.t." cal(U), rho_cal(U) tack.rr Gamma, not phi\
+      &cal(U), rho_cal(U) tack.rr Gamma and cal(U), rho_cal(U) tack.rr.not phi\
+      &"then" Gamma tack.rr.not phi "   " square
+    $
+  ] 
+]
+
+= Intuionism 
+
+Little scheme for the next topics: 
+
++ The Curry Howard Isomorphism 
+  + Intuionistic Logic 
+    + Intuionistic interpretation of connectives 
+    + Classical principles ? $A arrow B equiv not A or B$, $not P or P$
+    + BHK semantics 
+    + Kripke's semantics 
+    + Drop ex falso and we will obtain Minimal Logic which is equivalent to simply
+      typing language.
+  + Simply typed $lambda$-calculus 
+  + Normalization 
+    $
+      Pi_i arrow Pi_j "compute with proofs"\
+      "Formulas" arrow.l.r "Types"\
+      "Proofs" arrow.l.r "Programs"\
+    $
++ Proof theory of _Modal logic_    
+
+== Constructivism 
+
+Connectives in intuitionistic logic are interpreted in a constructive way.
+
+- $(and)$: $a$ proves $phi and psi := a$ is a pair $<b,c>$ such that $b$ proves $phi$ and $c$ proves $psi$.
+- $(or)$: $a$ proves $phi or psi := a$ is a pair $<i,b>$ such that $i in {0,1}$ and if $i = 0$ then $b$ proves $phi$ and if $i = 1$ then $b$ proves $psi$.
+- $(arrow)$: $a$ proves $phi arrow psi := a$ is a function that transforms any proof of $phi$ into a proof of $psi$.
+- $(bot)$: no $a$ proves $bot$. In order to deal with the quantifies we assume that some domain $D$ of objects is given.
+- $(forall)$ $a$ proves $forall x phi(x) := a$ is a construction such that for each $b in D, a(b)$ proves $phi(b)$.
+- $(exists)$ $a$ proves $exists x phi(x) := a$ is a pair $<b,c>$ such that $b in D$ and $c$ proves $phi(b)$. 
