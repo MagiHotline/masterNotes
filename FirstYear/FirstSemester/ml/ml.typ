@@ -613,3 +613,311 @@ The basic idea of stacking is to first train a set of base modesl on the same da
     image("figures/stacking.png", width: 70%),
   )
 
+= Linear Discriminant functions
+
+The objective of this topic is to presetn methos for learning 
+linear discriminant functions of the form:
+$
+  g(x) = w^T x + w_0 arrow.long.double.l.r cases(
+    g(x) > 0 " " x in omega_1, 
+    g(x) < 0  " " x in omega_2
+  )
+$
+where $w$ is the weight vector and $w_0$ is the bias term. 
+$
+  x = [x_1, x_2, dots, x_n]\ 
+  w = [w_1, w_2, dots, w_n]
+$
+For a problem with 2 classes the goal is to create a linear function $g(x)$ that separates the example belonging to the two classes. 
+$
+  g(x) = 0 arrow "either class"
+$
+
+#ex[
+  #figure(
+    image("figures/linear_sep.png", width: 50%),
+  )
+  Suppose we have se tof $m$ samples $x_1, dots, x_m$ some tagged 
+  $omega_1$ and others tagged $omega_2$. 
+  - We want to use these samples to determine weights $w$ and $w_0$
+  of the linear discriminant function. 
+  - Suppose also that there is a solution for which the probability of error is very low. 
+  Thus, a reasonable approach is to look for a weight vector that classifies all of the samples correctly or that the probability of making a mistake is zero. If such a weight vector exists, the samples are said to be *linearly separable*.
+]
+
+#figure(
+  image("figures/linear_sep_2.png", width: 70%),
+  caption: "Linear separable data"
+)
+
+Linear discriminant functions are optimal for Gaussian distributions with *equal covariance*.
+May not be optimal for other data disrtributions, but they are very simple to use. 
+Knowledge of class identies is not required when using linear discriminant functions. Therefore we can say that this is a *non-parametric* method.
+
+#figure(
+  image("figures/covar.png", width: 70%),
+  caption: "Linear separable data"
+)
+
+== Linear classifiers 
+
+Every linear discriminant function defines a linear classifier, but not every linear classifier is necessarily described in the form of a "discriminant function". 
+
+Decision boundary: $g(x) = w^T x + w_0 = 0$;
+- In 2D, is a line 
+- In 3D, is a plane
+- In nD, is a hyperplane.
+
+The training data is used to learn *w*. _Only w is needed to classify the new data points_. 
+If a solution vector exist (if there's an hyperplane) then:
+Which hyperplane a lienear classifier choose when the data is linearly separable? _The solution vector is not unique._ 
+
+One possibility is to seek a *unit-length weight vector* that maximizes the minimum distance from the samples to the separating 
+plane. Another possibility is to seek the _minimum-length weight vector_ satisfying:
+$
+  w^t x_i >= b, forall i
+$
+where $b$ is a positive constant called the margin. 
+These techniques attempt to find a solution vector closer to the
+“middle” of the solution region: in this way, the resulting solution is more likely to classify new test samples correctly.
+
+#figure(
+  image("figures/margin.png", width: 90%),
+)
+
+In case of a multi-class problem: 
+
+- One-vs-rest: C-1 Classifiers are constructed, one for each class $C_i$ versus non-$C_i$. 
+- One-vs-one: C(C-1)/2 Classifiers and then classify a test sample following a majority voting. 
+Both lead to areas of *ambiguity*.
+
+#figure(
+  image("figures/multi-class.png", width: 100%),
+  caption: "Multi-class classification: One-vs-rest and One-vs-one" 
+)
+
+== Augmented Feature Vector 
+
+We can write the linear discriminant function as: 
+$
+  g(x) = mat(w_0, w)^T mat(1; x) = a^t y = g(y)
+$
+where $y$ is called the augmented feature vector. 
+We added a dummy dimension to get a completely equivalent new homogeneneous problem. 
+Feature augmentation is done only for simpler notation. Throughout these notes we replace $a$ with $w$ for simplicity, since they both refer to _weights_.
+The old problem: 
+$
+  g(x) = w^T x + w_0
+$
+The new problem:
+$
+  g(y) = a^t  y
+$
+For the rest of this section, assume we have two classes.
+
+Training error is 0 if:
+$
+&cases(
+  g(y_i) > 0 " " forall y_i in c_1, 
+  g(y_i) < 0  " " forall y_i in c_2
+)\ 
+&cases(
+  a^t y_i > 0 " " forall y_i in c_1, 
+  a^t y_i < 0  " " forall y_i in c_2
+)\
+&cases(
+  a^t y_i > 0 " " forall y_i in c_1, 
+  a^t (-y_i) > 0  " " forall y_i in c_2
+)
+$
+This suggest a so called "normalization": 
+- Replace all examples from class 2 by their negatives:
+$
+  y arrow -y_i, forall y_i in c_2
+$
+- See weight vector $a$ such that 
+$
+  a^t y_i > 0, forall y_i 
+$
+If such $a$ exists, it is called a separating or _solution vector_.
+Original samples $x_1, dots, x_n$ can indeed be separated by a line in that way.
+
+#figure(
+  image("figures/norm.png", width: 90%),
+)
+Coming back to the “which hyperplace”
+question we can see that many solutions for the
+weight vector a exist.
+
+*The solution region* corresponding to a
+consists of all points classified on one side
+of the hyperplane, where the hyperplane is
+perpendicular to the normal vector *a*.
+
+== Gradient Descent 
+
+*Gradient Descent* is one of the simples approaches to calculating a _discriminant function_. It is an iterative method for progressively adjusting the *weights*. The gradient vector in space $W$ points to the direction on a *maximum deviation* of a function to be maximized/minimized.
+
+#figure(
+  image("figures/grad_desc.png", width: 80%),
+)
+
+The procedure consists of updating the vlaue of the weight vector at the $k+1$ step with a contribution proportional to the gradient module calculated at the previous step:
+$
+  w(k+1) = w(k) - rho_k nabla J(w(k))|_(w=w(k))
+$
+where $J(w)$ is an *evaluation function (loss function)* that must be minimized. $J(w)$ is chosen in such a way as to reach the minimum when $w$ approaches the optimal solution; 
+That is, J(w) should be convex, and w is the solution vector.
+The minimum of J(w) is obtained by moving w in the direction opposite to the gradient (in the direction of steepest descent).
+Gradient descent is *guaranteed to find only a local minimum*. Very popular, as it is simple and applicable to any function.
+#figure(
+  image("figures/local_min.png", width: 50%),
+)
+$nabla$ is the gradient operator symbol given by:
+$
+  nabla J = mat(frac(partial J, partial w_1); frac(partial J, partial w_2); dots; frac(partial J, partial w_n)) "  "
+ w(k+1) = w(k) - rho_k nabla J(w(k))|_(w=w(k))
+$
+$rho_k$ (learning rate) is an appropriate scalar value that varies
+with the iteration k, fixing the "magnitude" of the correction.
+At the $k$-th iteration:
+- Start with a chosen weight vector $w(1)$ and calculate its gradient $J(w(1))$
+- Then move from $w(1)$ in the direction of the steepest descent (opposite to the gradient) by a fixed step size $rho_k$ to obtain a new vector $w(2)$. 
+The main issue is how we use the optimal choice of $rho_k$.
+- if $rho_k$ is too *large*, gradient descent may overshoot the minimum and possibly never find the minimum. 
+- if $rho_k$ is too *small*, gradient descent may take a long time to converge to the minimum.
+
+== Perceptron 
+
+Let's learn a *binary classifier* with linear discriminant function. 
+To do so we need to choose a $J(w)$ such that the gradient descent can solve it,
+in this way we can find the minimum of $J(w)$. 
+A good choice is *Perceptron* criterion function: 
+$
+  J(w) = -sum_(x_i in M) y_i w^T x_i
+$
+where $X$ si a set of samples misclassified by $w$.
+J(w) is a non-negative since $w^t x_i < 0$ for all misclassified 
+samples. Do not forget to "normalize" the training set by replacing all
+examples of $omega_2$ by their negatives.
+We want to use gradient descent to solve the $J(w)$ so that it can converge,
+however, for such data (not linearly separable), _we cannot converge_.
+To find the minimum of $J(w)$, we use gradient descent,
+which is defined by: 
+- $i$-th component of the gradient vector is equal to:
+$
+J(w) = -sum_(i in X) w^T x_i arrow.double nabla J = -sum_(i in X) x_i\
+w_(k+1) = w_k + rho_k sum_(i in X) x_i "when" rho_k = 1 /k 
+$
+Notice that $nabla J$ does not depend on $w$ but only on the misclassified samples.
+Perceptron is the first *neural network*, whcih was then evolved to more
+complex versions such as *multi-layer perceptron*.
+
+#ex[
+  // fai a casa
+]
+
+=== Relaxation
+
+There are different relaxation methods:
+
+- The $J(w)$ takes the form:
+  $
+    J_q(w) = sum_(x_i in M) (w^T x_i)^2
+  $
+  also this function takes into account the missclassified samples and 
+  is minimised when *w* is the solution vector. 
+  The main difference is that its *gradient is now continuous* 
+  whereas the gradeint of the perceptron function $J$ is not. 
+  Such functions are suitable for finding smooth surfaces but this may lead
+  problems.
+- Another option for $J(w)$ is:
+$
+  J(w) = 1/2 sum_(x_i in M) frac((w^T x_i)^2, ||x_i||^2)
+$
+
+=== MSE 
+
+The classical MSE criterion provieds an alternative to the perceptron rule.
+The perceptron rule only consider misclassified samples, since these are the only 
+ones that violate the $J(w)$.
+Instead, the MSE criterion looks for a solution involving *all of the samples*.
+The goal is to verify $w^t x_i = b$ where the $b$ are some arbitrarily specified positive constants.
+We have now changed the problems:
+- *Perceptron*: $w^t x_i > 0$ for all samples $x_i$ this solve sthe system
+  of linear inequalities 
+- *MSE*: $w^t x_i = b$ for all samples $x_i$ this solve the system of linear equations.
+
+The MSE procedure is the following:
+- Choose positive constants: $b_1, dots, b_n$
+- Try to find a weight vector *w* such that $w^t x_i = b$ for all samples 
+  $x_i$. 
+- If we can find a weight vector $w$ then $w$ is a solution because 
+  $b_i$'s are all positive. 
+- Consider all the samples.
+
+For consistency, we will contiue assuming that examples from class 
+$omega_2$ have been replaced by ther negative vector, although 
+this is not a requirement for the MSE solution. Thus we have:
+$
+  X_(i, n+1) = 1 "for" omega_1 "and" X_(i, n+1) = -1 "for" omega_2
+$
+We then obtain $N$ equations with N = N_1 + N_2. 
+We need to salve N equations. In matrix notation we have:
+$
+  X dot w = b
+$
+when: 
+$
+  X = mat(x_(1,1), dots, x_(1,n+1), plus.minus 1; dots, dots.down, , dots.v; x_(N,1), dots, x_(N,n+1), plus.minus 1;)\
+  b = mat(b_1; dots; b_N)\
+  w = mat(w_1; dots; w_(n+1))
+$
+Thus we need to solve a linear system:
+$
+  X dot w = b
+$
+Generally $N >> n+1$ so there are more equations than unknowns. 
+$
+  X dot w = b arrow w = X^-1 b 
+$
+let's now inject the error vector (needed for the loss function) defined 
+as
+$
+  e = X dot w - b
+$
+Imagine this as $b$ is the real class label and $X w$ is your predictions.
+MSE finds $w$, which minimises the length of the error vector $e$. 
+Thus minimise the minimum squared error criterion function $J(w)$:
+$
+  J_M(w) = (X w - b)^t (X w - b) = ||X w - b||^2 
+$
+Unlike the perceptron criterion, by the MSE function is quadratic
+and differentiable. Therefore we can find its minimum analalytically 
+by setting the gradient to zero. The gradient of the objective function 
+$J_M(w)$: find derivative of $J_M(w)$ wrt to w.
+Let's denote $Y = X w - b$, then $J_m(w) = Y^t Y$; 
+now differentiating $J_M(w)$ with respect to $w$:
+$
+  frac(partial J_M(w), partial w) &= d/(d w) (Y^t Y)\ 
+  &= 2 Y^t frac(partial Y, partial w)\
+  &= 2 (X w - b)^t X
+$
+By setting the gradient to zero, this becomes:
+$
+  2(X w - b)^t X = 0 arrow.double X^t X w = X^t b 
+$
+If we multiply by $[X^t X]^(-1)$, we get $w = [X^t X]^(-1) X^t b = X^hash b$
+where $X^hash = [X^t X]^(-1) X^t$ is the _pseudo-inverse of $X$_.
+Consequently, $w = X^hash b$ is the optimal solution according to the 
+MSE method.
+In properties of MSE: 
+- $w = X^hash b$ shows that MSE solution depends on the margin vector $b$.
+- If b is arbitrarily fixed, there is no evidence that the MSE solution
+  gives a separator vector in the case of linear separability. 
+- MSE pays too much attention to *outlier examples*. Because MSE squares the error, 
+  larger error have a disproportionate influence on the solution. 
+- For classification, where _we only care about which side of the boundary
+  a sample is on_, this sensitivity is undesirable.
+- $X^hash$ is difficult to obtain, as this requires inverting a large matrix  
+  which is expensive for high-dimensional data, impossible if $X^t X$ is singular (non-invertible)
