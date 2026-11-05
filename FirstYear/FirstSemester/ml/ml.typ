@@ -836,7 +836,7 @@ $
   J(w) = 1/2 sum_(x_i in M) frac((w^T x_i)^2, ||x_i||^2)
 $
 
-=== MSE 
+== MSE 
 
 The classical MSE criterion provieds an alternative to the perceptron rule.
 The perceptron rule only consider misclassified samples, since these are the only 
@@ -921,3 +921,62 @@ In properties of MSE:
   a sample is on_, this sensitivity is undesirable.
 - $X^hash$ is difficult to obtain, as this requires inverting a large matrix  
   which is expensive for high-dimensional data, impossible if $X^t X$ is singular (non-invertible)
+
+== Least MSE 
+
+Considering one *sample at a time* we get the LMS rule: 
+$
+  w_(k+1) = w_k + rho_k (b_i - w_k^t x_k) x_k
+$
+such that $b_k$ is the value for the k-th sample of the margin b 
+i.e. it depends on the sample $x_k$.
+This method is called Widrow-Hoff, least-mean-squares (LMS) or
+delta rule. It reduces storage requirements by considering single samples sequentially.
+
+Windrow-Hoff rule "corrects" $w_k$ whenever $w_k^t w_k != b_k$. 
+The weight change is:
+$
+  delta w_k = w_(k+1) - w_k = rho_k (b_k - w_k^t x_k) x_k
+$
++ Prediction is correct: 
+  - $b_k - w_k^t x_k = 0$ 
+  - $delta w_k = 0$ 
+  - No change in the weight vector.
++ Prediction is incorrect:
+  - $b_k - w_k^t x_k != 0$ 
+  - $delta w_k != 0$ 
+  - Weight vector is updated in the direction of the sample $x_k$.
+
+== The Ho-Kashyap method 
+
+The main limitation of the MSE criterion is the lack of guarantees that a separating hyperplane will be found in the linearly separable case. All we can say about the MSE rule is that it minimises:
+$
+  ||X w - b||^2 "when" b "is chosen arbitrarily"
+$
+This means that whether MSE finds a separating hyperplane or not
+depends on how properly the margin b is selected (notice that in some sources b is referred to as target outputs).
+
+If the training samples are linearly separable, then there must be
+vectors $w^*$ and $b^*$ such that $X w^* = b^* > 0$ where $b* > 0$, meaning that every component of $b^*$ is positive.
+If $b^*$ were known, one could simply use MSE solution to compute
+separating hyperplane. The idea is to both find $w^*$ and $b^*$.
+Minimize the following criterion function, restricting to positive b: 
+$
+  J_(h k)(w b) = ||X w - b||^2\
+  J_(h k)(w^* b^*) = 0
+$
+As usual take partial derivatives wrt to $b$ and $w$:
+$
+  frac(partial J_(h k)(w b), partial w) = 2 X^t (X w - b)\
+  frac(partial J_(h k)(w b), partial b) = -2 (X w - b)
+$
+Use gradient descent to find the minimum of $J_(h k)(w b)$: 
+Alternate the two steps below until convergence.
+- Fix $b$ and minimise $J_(h k)(w b)$ wrt $w$ 
+- Fix $w$ and minimise $J_(h k)(w b)$ wrt $b$
+Let $e_k = X w_k - b_k$ in the linearly separable case:
+- If $e_k = $ the solution has been found. 
+- One of the components of $e_k$ is positive, algorithm continues 
+In non separable case: 
+- $e_k$ will have only negative components eventually, thus found   proof of non-seperability
+- No bound on how mainy iterations is needed for the proof of nonseperability.

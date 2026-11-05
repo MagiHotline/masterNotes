@@ -462,3 +462,48 @@ Nella sicurezza, bisogna comunque applicare il _zero-trust_ che dice
 che non bisognerebbe mai fidarsi ma sempre verificarsi che un sistema 
 possa penetrare all'interno del sistema: continuamente valutare l'accesso, limitare 
 il movimento latera, verificare l'identità e il dispositivo.
+
+== Black Box Security 
+
+L'attaccante si assume di aver 
+
+== Gray Box 
+L'attaccante si assume di avere: 
+- Accessi fisici parziali alle chiavi crittografiche come risultato
+  di un canale che perde informazioni 
+  - Electromagnetic radiation analisys 
+  - Current/power consumption analisys
+  - Operation timing analisys
+
+== White box security 
+I sistemi di gestione di diritti digitiali sono considerati 
+white box poiché: 
+
+- L'utente finale è capace di acquistare alcuni tipi di contenuti premium 
+- Il contenuto arriva all'utente crittato e decrittato solo quando viene guardato 
+- Un uutente malevolo può provare ad estrarre le chiavi crittografiche dalsoftware e usarle per ridistribuire il contenuto fuori dal sistema DMR.
+
+#figure(
+  image("images/host_env.png", width: 80%),
+  caption: "White box security",
+)
+
+Il goal della white box criptography è quella di recuperare la chiave in uno scenario white box almeno difficile come una black-box security. Detti in altri modi, la pattern è quella di trasformare la chiave in modo tale che attaccare con un accesso white box non offre nessun vantaggio rispetto ad un accesso black box.
+
+=== Code Obfuscation
+
+La code obfuscation è una tecnica di white box crypto con l'obiettivo di rendere intelliggibile il codice sorgente o il bytecode di un programma, rendendo più difficile per un attaccante analizzare e comprendere il funzionamento del software. 
+
+Offuscare point function: 
+$
+  I_x(w) = {1 "if" w = x, 0 "otherwise"}
+$
+Offuscare $I_x$ perfettamente con una _one-way function $f$_.
+Una one-way function è una funzione che è facile da calcolare in una direzione, ma difficile da invertire. 
+Sia $y = f(x)$:
+$
+  "Obf"I_x(w) = {"if" y = f(w) "then" 1, "otherwise" 0}
+$
+intuitivamente $y = f(x)$ rivela poco o null rispetto all'accesso black box a $I_x$. 
+Tutto ciò che può essere imparato al programma offuscato 
+può essere imparato anche al programma non offuscato. 
