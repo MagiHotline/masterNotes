@@ -1010,3 +1010,112 @@ Connectives in intuitionistic logic are interpreted in a constructive way.
 - $(bot)$: no $a$ proves $bot$. In order to deal with the quantifies we assume that some domain $D$ of objects is given.
 - $(forall)$ $a$ proves $forall x phi(x) := a$ is a construction such that for each $b in D, a(b)$ proves $phi(b)$.
 - $(exists)$ $a$ proves $exists x phi(x) := a$ is a pair $<b,c>$ such that $b in D$ and $c$ proves $phi(b)$. 
+
+How do we interpret this connectives?
+
+- Disjunction $(phi or psi)$
+  - provide/exhibit a proof of $phi$ or  provide/exhibit a proof of $psi$. Remember that TND ($phi or not phi$) is not acceptable as all equivalent principles
+- Implication ($alpha arrow beta$)
+  - A construction/transformation so that given a proof $Pi$ of $alpha$ and returns a proof $Pi'$ of $beta$
+  $
+    Pi' = f(Pi)
+  $ 
+  "$arrow$" transforms proofs into proofs.
+  In intuitionistic logic we lose the very useful transformation $A arrow B arrow.double.l.r not A or B$. We lose this because of this:
+  $
+    A arrow A arrow.double.l.r not A or A "   X"
+  $
+- Existential Quantifier 
+  - Constructively prove $exists x. phi$ means I haev tow steps:
+    + provide/exhibit $a in cal(D)$ (witness)
+    + provide a proof/construction of $phi(a)$ ($phi(x)[a\/x]$)
+- Ex falso is accepted. If we remove it, 
+  $
+    "IL" backslash { "EF" } = "Minimal Logic"
+  $
+
+Let's see if other principles work. 
+$phi arrow not not phi$ is an intuitionistic logic principle. The other direction is _not provable_. Though we can find a closed derivation for this other proposition: 
+$
+  tack not not not phi arrow not phi
+$
+Principium contradictionis is also a theorem: 
+$
+  tack_("IL") not (A and not A) 
+$
+#align(center, prooftree(
+  rule(
+    label: $arrow I^1$,
+    rule(
+      rule(
+        $[<p,f>: A and not A]^1$, 
+        $p: A$
+      ),
+      rule(
+        $[<p,f>:A and not A]^1$, 
+        $f: not A$
+      ),
+      $f(p): bot$
+    ),
+    $<p,f> mapsto f(p): (A and not A) arrow bot$
+  )
+))
+Attached to the derivation we included labels to do a derivation in a curry-howard style, showing the BHK semantics. 
+Let's try to derivate and decorate this theorem:
+$
+  tack_("IL") not not (P or not P)
+$
+
+#align(center, prooftree(
+  rule(
+  rule(
+    $[a: not (P or not P)]^2$,
+    rule(
+      rule(
+        rule(
+          $[a: not (P or not P)]^2$,
+          rule(
+            $[p: P]^1$,
+            $<0,b>: P or not P$
+          ), 
+          $a(<0,b>): bot$
+        ),
+        $q equiv p mapsto a(<0,b>): not P$
+      ),
+      $<1, q>: P or not P$
+    ), 
+    $a(<1,q>): bot$
+  ),
+  $a mapsto a(<1,q>): not not (P or not P)$
+  )
+))
+
+Let's see another example: 
+$
+  tack (phi and not psi) arrow (not phi arrow psi)
+$
+This also derivable. Provide a derivation and decoration.
+
+== Kripke's semantics 
+
+In kripke's semantics we are going to visualize it with graphs. 
+We use the tuple $<N,E>$ where $N$ is the number of nodes and $E$ the number of edges. 
+The idea is the we can assign label the nodes and also the edges with some additional informations. Truths hold maybe in some nodes and cannot hold in other nodes. Nodes can represent states and thats why it's a winning theory in computer science. 
+When we say:
+$
+  w_i R w_j
+$
+we have a _preorder_.
+
+
+#def("Kripke model")[
+  A kripke model is a 4-ple:
+  $
+    cal(K) = <K, <=, V, tack.double >
+  $
+  so that:
+  - $K$ is a set of *worlds*
+  - $<=$ is a partial order on $K$
+  - $V: K arrow 2^"PROP"$ so that $p in V(k)$ and $k <= k'$ then $p in V(k')$ is an *evaluation function*.
+  - $tack.double subset.eq K times "FORM"$ 
+]
