@@ -980,3 +980,219 @@ Let $e_k = X w_k - b_k$ in the linearly separable case:
 In non separable case: 
 - $e_k$ will have only negative components eventually, thus found   proof of non-seperability
 - No bound on how mainy iterations is needed for the proof of nonseperability.
+
+= Dimensionality reduction
+
+== Problems until now
+
+There are some problems with high-dimensional data:
+- Curse of dimensionality 
+- Overfitting
+In practical problems you may find training data in various forms:
+- Few samples
+- Few sampels and many features 
+- Fixed features that cannot be selected 
+- Not-indipendent features 
+There are two important things to consider for designing a classifier: 
+- *Computational complexity* of the system. More features just means bigger storage.
+- The *influence of dimensionality* (number of features) of the training set on the performance of the classifier.
+If the features are statistically independent, then it is more likely to
+achieve the optimal performance.
+In general, if the performance is not in the desired level, you can add
+features, but this brings in the cost of complicating the classifier and
+the feature extractor. If adding features leads to worse performance, then this could be because:
+
+- Choosing an incorrect model (e.g., Gaussian hypothesis or conditional probability hypothesis)
+- Insufficient number of samples.
+
+== Complexity and Overfitting
+
+*Complexity* increases increases when number of features aka dimensionality d increases. A lot of methods already have at least $O(n d^2)$ complexity, when n is
+the number of samples (For example, covariance matrix calculation). This, as $d$ increases, $O(n d^2)$ complexity may be really costly. If $d$ is large, and the number of samples $n$ is too small (or in some cases even smaller), then the problem of curse of dimensionality appear. If the model gets too complicated for the data and *overfitting may occur*.
+
+*Overfitting* occurs when a model learns _to perform well on training data_ but fails to generalize to unseen data. When $d$ is high, the data become increasingly sparse and spread out in the high-dimensional space. This can lead to overfitting because:
+
+- The model may learn patterns that are specific to the training data.
+- The model has more freedom to fit the noise (e.g., irrelevant features) in the training data rather than the underlying patterns
+
+#ex[
+  add exmaple here
+]
+
+Overall if $n$ samples is dense enough in 1D, then in $d$ dimensions we need $n^d$ samples. *Pay attention that $n^d$ grows really to fast as a function of $d$*.
+For a fixed number of samples, as weadd features, the classification error becomes:
+
+#figure(
+  image("figures/overfitting.png", width: 90%),
+)
+
+== Dimensionality reduction 
+
+The aim is to represent samples with fewer features, while preserving the structure of the data as much as possibile and keep only structure that affects class separability. We will construct a new set of dimensions, e.g. by the linear combination of original dimensions. Combine in _somehow_ old features to create new features. Ideally the new features vector should retain all important inforamtion from the old feature vector. 
+
+#def("Dimensionality reduction")[
+  We look for a transformation $W$ that leads from poorly structured $y$ samples into a new simpler, but more discriminant features set $x$ for classification:
+  $
+    x = W y
+  $
+  where $X$ represent the new features with $k$ data points ($k times m$) and $Y$ represent the original features with $k$ data points ($k times n$) and $n >> m$.
+]
+
+=== Principal Component Analysis 
+One way to do it is principal component analysis (PCA). The most frequently sued method to reduce dimensionality. 
+PCA defines a set of principal components:
+
+- 1st component: direction of the greatest variability (largest variance) in the data
+- 2nd component: perpendicular to 1st, greatest variability of what is left..
+- and so one until original dimensionality. 
+Once you obtain the new features representations (new dimensions)
+
+- Change the coordinates of every data point to these new dimensions, then apply the ML algorithm
+- Note that the new feature representations has the same variance as old features. _PCA preserves the largest variances in the data._
+
+#figure(
+  image("figures/PCA.png", width: 90%),
+  caption: "In 3D figures you can see how the first component has largest invariance in the third dimension. Than we take the perpendicular one and so one"
+)
+
+You need to apply PCA when:
+- You want to reduce the number of variables, but aren’t able to identify variables to completely remove from consideration
+- You want to ensure your variables are independent of one another
+- You are comfortable making your independent variables less interpretable
+
+If specifically don't need the third condition then you *should not* use PCA.
+What is the direction of largest variance in data?
+If $x$ has multivariate distribution $N(mu, Sigma)$, direction of largest variance is given by *eigenvector* corresponding to the largest *eigenvalue* of $Sigma$. 
+Therefore we need to be looking at the covariance matrix of the data. PCA can be applied to distributions also other than Gaussian.
+
+#figure(
+  image("figures/eigenvector.png", width: 20%),
+)
+The PCA algorithm goes like this: 
+
++ Standardize the given data.
+  - Subtract the mean of each feature from the data. (The new data has zero mean.)
++ Calculate the covariance matrix of the standardized data.
++ Compute the eigenvectors and eigenvalues of the covariance matrix.
++ Sort the eigenvalues in descending order and choose the top k eigenvectors as principal components. 
++ Multiply the standardized data matrix obtained in Step 1 by the selected principal components matrix. In this way, you obtained the new features with k number of features.
+
+== TODO: PCA with Math
+
+#ex[
+  Another example here 
+]
+
+=== Finding the Top K
+
+In the previous examples we had only 2 features then if we want to drop some of
+the dimensions, it is trivial to represent data in the form of one dimension. 
+How do we define how many principal compenents to take (the Top $K$)? 
+Depends on the goal and the application. No means of validating it, unless we use it in the context of a
+supervised method (e.g., reduce the input dimensionality for a
+supervised algorithm). Nonetheless, we can compute the cumulative proportion of
+eigenvalues for the first k principal components, allowing us to
+estimate the amount of information loss. As a threshold, one can use 90%, 95%, etc.
+
+=== PCA Drawbacks 
+
+PCA assumes that the variables are *linearly correlated*, in many cases,
+we already know that they are not. Only the axes with the *greatest variance* 
+are considered, there are some cases in which this involves huge mistakes.
+
+#figure(
+  image("figures/pca_p.png", width: 40%),
+  caption: "We can see here that the variance that will be chosen will be the
+  second dimension since has the largest variance"
+)
+
+Dimensionality reduction with linear methods like PCA allow us to:
+
+- Visualize the training set and then work on it.
+- Reduce the time and space complexity
+- Remove multi-collinearity (can be helpful to handle overfitting)
+- Remove irrelevant features from the data
+- Handle curse-of dimensionality
+- Once dimensionality reduction is applied, we typically apply classification or 
+  other tasks using the new feature space.
+
+== Non-linear Dimensionality Reduction. 
+
+There are few other DR but this time non-linear including:
+
+- *t-Distributed Stochastic Neighbor Embedding (t-SNE)*: is effective for visualizing 
+  high-dimensional data in lower dimensions, often used for clustering.
+- *Uniform Manifold Approximation and Projection (UMAP)*: preserves both global and local structures of the data.
+- *Autoencoders*: Neural network-based models that learn a compressed representation of the data.
+- *Factor Analysis*: A probabilistic model that assumes observed variables are linear combinations of underlying factors plus noise.
+- *Isomap (Isometric Mapping)*: Non-linear method that focuses on preserving the geodesic distances between all pairs of data points.
+- *Locally Linear Embedding (LLE)*: Non-linear method that seeks a
+  low-dimensional representation while preserving the local
+  relationships within neighborhoods.
+- *Kernel PCA*: Extends PCA using the kernel trick, allowing it to
+  capture non-linear relationships.
+- *Random Projection*: A simple, computationally efficient method that projects data onto a lower-dimensional subspace with a random
+  projection matrix.
+
+
+=== t-Distributed Stochastic Neighbor Embedding (t-SNE)
+
+t-SNE is a nonlinear technique that is well suited for embedding high
+dimension data into lower dimensional data (2D or 3D) for data visualization.
+Non-linear dimensionality reduction means that the algorithm allows
+us to separate data that cannot be separated by a straight line.
+*Stochastic means* not definite but random probability (standard deviation is unknown)
+*Neighbor Embedding* means find the similarity among the data samples
+which are in a neighborhood. t-SNE is an algorithm that generates slightly different results each
+time on the same data set, focusing on retaining the structure of
+neighbor points. It is an indeterministic approach.
+
+=== t-SNE algorithm 
+
+It goes like this: 
+
++ Given a dataset $X$ with n data points in a high-dimensional space
+  (D-dimensional), compute pairwise similarities between data points
+  using a conditional Gaussian probability distribution $P_(i j)$
+  $
+    P_(i j) = frac(exp((-||x_i - x_j||^2) / (2 sigma^2_i)), sum_(k eq.not l) exp((-||x_k - x_l||^2) / (2 sigma^2_k)))
+  $
+  where $||x_i - x_j||$ is the Euclidean distance between points $x_i$ and $x_j$, and
+  $sigma_i$ is the *variance* that is given as an input. We do not set the variance
+  directly. Instead, we specify the expected number of neighbors, called
+  *perplexity*.
+  _A perplexity is more or less a target number of neighbors for our central
+point. Basically, the higher the perplexity is the higher value variance has._
++ To make the optimization easier, the probabilities are symmetrized
+  and obtain $hat(P)_(i j)$ that represents our high dimensional data:
+  $
+    hat(P)_(i j) = ((P_(i j) - P_(j i)) / (2n))
+  $
++ Define a lower-dimensional representation $Y$ for the data points (d-
+  dimensional, where d is usually 2 or 3).
++ Compute pairwise similarities $Q_(i j)$ in the lower-dimensional space
+  using a t-distribution:
+  $
+    Q_(i j) = frac((1 + ||y_i - y_j||^2)^(-1), sum_(k eq.not l) (1 + ||y_k - y_l||^2)^(-1))
+  $
+  where $y_i$ and $y_j$ are the coordinates of the corresponding points in the
+  lower dimensional space.
++ Symmetrize the pairwise similarities to obtain $hat(Q)_(i j)$
+  $
+    hat(Q)_(i j) = ((Q_(i j) + Q_(j i)) / (2n))
+  $
++ Our goal is to find new dimensions through optimization such that
+  all $hat(P)_(i j)$ and $hat(Q)_(i j)$ are as close as possible. 
+  This closeness is found by Kullback-Leibler divergence:
+  $
+    C = sum_i "KL"(hat(P)_(i j)||hat(Q)_(i j)) = sum_i sum_j hat(P)_(i j)log(frac(hat(P)_(i j), hat(Q)_(i j)))
+  $
+  _A higher Kullback-Leibler (KL) divergence between two probability
+  distributions indicates a greater dissimilarity or mismatch between them._
++ Use gradient descent to minimize the KL divergence with respect to
+  the coordinates $Y$ in the lower-dimensional space.
+
+
+#figure(
+  image("figures/pca_vs_tsne.png", width: 80%),
+)
