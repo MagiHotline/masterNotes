@@ -1111,11 +1111,39 @@ we have a _preorder_.
 #def("Kripke model")[
   A kripke model is a 4-ple:
   $
-    cal(K) = <K, <=, V, tack.double >
+    cal(K) = <K, <=, V, tack.rr >
   $
   so that:
   - $K$ is a set of *worlds*
   - $<=$ is a partial order on $K$
   - $V: K arrow 2^"PROP"$ so that $p in V(k)$ and $k <= k'$ then $p in V(k')$ is an *evaluation function*.
-  - $tack.double subset.eq K times "FORM"$ 
+  - $tack.rr subset.eq K times "FORM"$ is called *forcing relation*. It satisfies the following conditions: 
+    - $k tack.rr p in V(k)$ for $p in "PROP"$
+    - $k tack.rr phi and psi arrow.long.double.l.r k tack.rr phi "AND" k tack.rr psi$
+    - $k tack.rr phi or psi arrow.long.double.l.r k tack.rr phi "OR" k tack.rr psi$
+    - $k tack.rr phi arrow psi arrow.long.double.l.r forall k' >= k, k' tack.rr phi "THEN" k' tack.rr psi$
+    - $k tack.rr.not bot$
+    - $k tack.rr not phi arrow.long.double.l.r$ $forall k' >= k, arrow.double.long$ if $k' tack.rr.not phi$
 ]
+
+#def("Corollario")[
+  - $k tack.rr not phi arrow.long.double.l.r$ for all $l >= k, l tack.rr.not phi$
+  - $k tack.rr not phi arrow.long.double.l.r$ for all $l >= k$ there exists TODO
+]
+
+#ex[
+  Let's take this Kripke model:
+  TODO fare esempioo
+]
+
+We say that $cal(H) tack.rr phi$ iff for each $k in cal(H)$ we have $k tack.rr phi$.
+We say that $tack.rr phi$ iff for each $cal(H)$ we have $cal(H) tack.rr phi$.
+We say that $Gamma tack.rr phi$ iff for reach $cal(H)$ and for each $k in cal(H)$ we have $k tack.rr Gamma arrow.double.long k tack.rr phi$.
+
+#def["Soundness of Kripke's semantics"][
+  $Gamma tack phi$ iff $Gamma tack.rr phi$.
+]
+
+Se $tack phi arrow.double tack.rr phi$. Di conseguenza: $tack.rr.not phi arrow.double tack.not phi$. Cerchiamo un contromodello. Una proposizione che che ci piacerebbe provare è $tack.not not not p arrow p$.
+
+Ora possiamo provare che $not p or p$

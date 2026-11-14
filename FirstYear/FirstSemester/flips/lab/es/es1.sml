@@ -30,10 +30,8 @@ fun collatzSpets n =
   if n = 1 then 0 else
   if n mod 2 = 0 then 1 + collatzSpets(n div 2) else 1 + collatzSpets((n * 3) + 1);
 
-(*
-
-Esercizio 4: Ricorsione e Funzioni Curried
-Implementare la funzione
+(* Es4:
+Ricorsione e Funzioni Curried Implementare la funzione
 val power = fn: int -> int -> int
 che calcola la potenza 𝑥 𝑦
 (𝑥 elevato alla 𝑦) per esponenti interi
